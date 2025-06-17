@@ -19,121 +19,183 @@ export default function ScoreIndex() {
     });
   };
 
-  return (
-    <div style={{ backgroundColor: "#1a1a1a", color: "white", padding: "2rem" }}>
-      <center>
-        <h1 style={{ fontSize: "2rem", fontWeight: "bold" }}>Score Index</h1>
+return (
+  <div style={{ backgroundColor: "#1a1a1a", color: "white", minHeight: "100vh", padding: "2rem" }}>
+    <center>
+      <h1 style={{ fontSize: "2rem", fontWeight: "bold" }}>Score Index</h1>
 
-        <input
-          type="text"
-          placeholder="Match Number"
-          value={matchNumber}
-          onChange={(e) => setMatchNumber(e.target.value)}
-          onBlur={updateMatchInfo}
-          style={{ margin: "0.5rem", padding: "0.5rem" }}
-        />
-        <input
-          type="text"
-          placeholder="Red Team Name"
-          value={redName}
-          onChange={(e) => setRedName(e.target.value)}
-          onBlur={updateMatchInfo}
-          style={{ margin: "0.5rem", padding: "0.5rem" }}
-        />
-        <input
-          type="text"
-          placeholder="Blue Team Name"
-          value={blueName}
-          onChange={(e) => setBlueName(e.target.value)}
-          onBlur={updateMatchInfo}
-          style={{ margin: "0.5rem", padding: "0.5rem" }}
-        />
+      <input
+        type="text"
+        placeholder="Match Number"
+        value={matchNumber}
+        onChange={(e) => setMatchNumber(e.target.value)}
+        onBlur={updateMatchInfo}
+        style={{
+          margin: "0.5rem",
+          padding: "0.5rem",
+          backgroundColor: "#2a2a2a",
+          color: "white",
+          border: "1px solid gray",
+          borderRadius: "4px",
+        }}
+      />
+      <input
+        type="text"
+        placeholder="Red Team Name"
+        value={redName}
+        onChange={(e) => setRedName(e.target.value)}
+        onBlur={updateMatchInfo}
+        style={{
+          margin: "0.5rem",
+          padding: "0.5rem",
+          backgroundColor: "#2a2a2a",
+          color: "#ff1000",
+          border: "1px solid #ff1000",
+          borderRadius: "4px",
+        }}
+      />
+      <input
+        type="text"
+        placeholder="Blue Team Name"
+        value={blueName}
+        onChange={(e) => setBlueName(e.target.value)}
+        onBlur={updateMatchInfo}
+        style={{
+          margin: "0.5rem",
+          padding: "0.5rem",
+          backgroundColor: "#2a2a2a",
+          color: "#0091ff",
+          border: "1px solid #0091ff",
+          borderRadius: "4px",
+        }}
+      />
 
-        <div style={{ marginTop: "1rem" }}>
-          <Link href="/red-score" style={{ color: "#ff4d4f", margin: "1rem", display: "inline-block" }}>
-            Red
-          </Link>
-          <Link href="/blue-score" style={{ color: "#4d88ff", margin: "1rem", display: "inline-block" }}>
-            Blue
-          </Link>
-          <Link href="/scoreboard" style={{ color: "#6db5ff", margin: "1rem", display: "inline-block" }}>
-            Scoreboard
-          </Link>
-        </div>
+      <div style={{ marginTop: "1rem" }}>
+        <Link
+          href="/red-score"
+          style={{
+            color: "#ff1000",
+            margin: "1rem",
+            display: "inline-block",
+            textDecoration: "underline",
+          }}
+        >
+          Red
+        </Link>
+        <Link
+          href="/blue-score"
+          style={{
+            color: "#0091ff",
+            margin: "1rem",
+            display: "inline-block",
+            textDecoration: "underline",
+          }}
+        >
+          Blue
+        </Link>
+        <Link
+          href="/scoreboard"
+          style={{
+            color: "white",
+            margin: "1rem",
+            display: "inline-block",
+            textDecoration: "underline",
+          }}
+        >
+          Scoreboard
+        </Link>
 
-        <div style={{ marginTop: "2rem" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ margin: "0.5rem" }}
-            onClick={() => {
-              setDoc(doc(db, "realtime", "timer"), { start: true });
-            }}
-          >
-            Start Match
-          </Button>
+      </div>
 
-          <Button variant="contained" color="secondary" style={{ margin: "0.5rem" }}>
-            Finish Match
-          </Button>
+      <div style={{ marginTop: "2rem" }}>
+        <Button
+          variant="contained"
+          style={{
+            margin: "0.5rem",
+            backgroundColor: "#0091ff",
+            color: "white",
+          }}
+          onClick={() => {
+            setDoc(doc(db, "realtime", "timer"), { start: true });
+          }}
+        >
+          Start Match
+        </Button>
 
-          <Button
-            variant="outlined"
-            style={{ margin: "0.5rem" }}
-            onClick={async () => {
-              await setDoc(doc(db, "realtime", "timer"), {
-                start: false,
-                reset: true,
-              });
+        <Button
+          variant="contained"
+          style={{ margin: "0.5rem", backgroundColor: "#bf00ff", color: "white" }}
+        >
+          Finish Match
+        </Button>
 
-              await setDoc(doc(db, "realtime", "red"), {
-                teamColor: "red",
-                autoPeg: 0,
-                autoUpright: 0,
-                autoKnocked: 0,
-                teleopPeg: 0,
-                teleopUpright: 0,
-                teleopKnocked: 0,
-                teleopRows: 0,
-                climbed: false,
-                totalScore: 0,
-              });
+        <Button
+          variant="outlined"
+          style={{ margin: "0.5rem",
+            color: "#ffffff",
+            borderColor: "#ffffff",
+           }}
+          onClick={async () => {
+            await setDoc(doc(db, "realtime", "timer"), {
+              start: false,
+              reset: true,
+            });
 
-              await setDoc(doc(db, "realtime", "blue"), {
-                teamColor: "blue",
-                autoPeg: 0,
-                autoUpright: 0,
-                autoKnocked: 0,
-                teleopPeg: 0,
-                teleopUpright: 0,
-                teleopKnocked: 0,
-                teleopRows: 0,
-                climbed: false,
-                totalScore: 0,
-              });
-            }}
-          >
-            Reset Match
-          </Button>
+            await setDoc(doc(db, "realtime", "red"), {
+              teamColor: "red",
+              autoPeg: 0,
+              autoUpright: 0,
+              autoKnocked: 0,
+              teleopPeg: 0,
+              teleopUpright: 0,
+              teleopKnocked: 0,
+              teleopRows: 0,
+              climbed: false,
+              parked: false,
+              totalScore: 0,
+            });
 
-          <Button
-            variant="contained"
-            style={{ margin: "0.5rem", backgroundColor: "#d9534f", color: "white" }}
-            onClick={async () => {
-              const audio = new Audio("/sounds/abort_match.mp3");
-              audio.play();
+            await setDoc(doc(db, "realtime", "blue"), {
+              teamColor: "blue",
+              autoPeg: 0,
+              autoUpright: 0,
+              autoKnocked: 0,
+              teleopPeg: 0,
+              teleopUpright: 0,
+              teleopKnocked: 0,
+              teleopRows: 0,
+              climbed: false,
+              parked: false,
+              totalScore: 0,
+            });
+          }}
+        >
+          Reset Match
+        </Button>
 
-              // Pause the match (set running to false)
-              await updateDoc(doc(db, "realtime", "timer"), {
-                start: false,
-                paused: true, // You can implement logic in scoreboard to respect this
-              });
-            }}
-          >
-            Abort Match
-          </Button>
-        </div>
-      </center>
-    </div>
-  );
-}
+        <Button
+          variant="contained"
+          style={{
+            margin: "0.5rem",
+            backgroundColor: "#ff1000",
+            color: "white",
+          }}
+          onClick={async () => {
+            const audio = new Audio("/sounds/abort_match.mp3");
+            audio.play();
+
+            await updateDoc(doc(db, "realtime", "timer"), {
+              start: false,
+              paused: true,
+            });
+          }}
+        >
+          Abort Match
+        </Button>
+      </div>
+    </center>
+  </div>
+);
+
+
+  }

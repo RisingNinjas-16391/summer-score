@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Button from "@mui/material/Button";
 import { db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 
 export default function ScoreIndex() {
   const [matchNumber, setMatchNumber] = useState("");
@@ -62,14 +62,75 @@ export default function ScoreIndex() {
         </div>
 
         <div style={{ marginTop: "2rem" }}>
-          <Button variant="contained" color="primary" style={{ margin: "0.5rem" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ margin: "0.5rem" }}
+            onClick={() => {
+              setDoc(doc(db, "realtime", "timer"), { start: true });
+            }}
+          >
             Start Match
           </Button>
+
           <Button variant="contained" color="secondary" style={{ margin: "0.5rem" }}>
             Finish Match
           </Button>
-          <Button variant="outlined" style={{ margin: "0.5rem" }}>
+
+          <Button
+            variant="outlined"
+            style={{ margin: "0.5rem" }}
+            onClick={async () => {
+              await setDoc(doc(db, "realtime", "timer"), {
+                start: false,
+                reset: true,
+              });
+
+              await setDoc(doc(db, "realtime", "red"), {
+                teamColor: "red",
+                autoPeg: 0,
+                autoUpright: 0,
+                autoKnocked: 0,
+                teleopPeg: 0,
+                teleopUpright: 0,
+                teleopKnocked: 0,
+                teleopRows: 0,
+                climbed: false,
+                totalScore: 0,
+              });
+
+              await setDoc(doc(db, "realtime", "blue"), {
+                teamColor: "blue",
+                autoPeg: 0,
+                autoUpright: 0,
+                autoKnocked: 0,
+                teleopPeg: 0,
+                teleopUpright: 0,
+                teleopKnocked: 0,
+                teleopRows: 0,
+                climbed: false,
+                totalScore: 0,
+              });
+            }}
+          >
             Reset Match
+          </Button>
+
+          <Button
+            variant="contained"
+            style={{ margin: "0.5rem", backgroundColor: "#d9534f", color: "white" }}
+            onClick={async () => {
+              const audio = new Audio("/sounds/abort_match.mp3");
+              audio.play();
+
+              // Pause the match (set running to false)
+              await updateDoc(doc(db, "realtime", "timer"), {
+                start: false,
+                paused: true, // You can implement logic in scoreboard to respect this
+              });
+            }}
+          >
+            Abort Match
           </Button>
         </div>
       </center>

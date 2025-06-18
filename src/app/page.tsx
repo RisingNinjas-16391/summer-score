@@ -20,7 +20,7 @@ export default function ScoreIndex() {
   };
 
 return (
-  <div style={{ backgroundColor: "#1a1a1a", color: "white", minHeight: "100vh", padding: "2rem" }}>
+  <div style={{ backgroundColor: "#000000", color: "white", minHeight: "100vh", padding: "2rem" }}>
     <center>
       <h1 style={{ fontSize: "2rem", fontWeight: "bold" }}>Score Index</h1>
 
@@ -126,7 +126,7 @@ return (
           variant="contained"
           style={{ margin: "0.5rem", backgroundColor: "#bf00ff", color: "white" }}
         >
-          Finish Match
+          Finalize Match
         </Button>
 
         <Button

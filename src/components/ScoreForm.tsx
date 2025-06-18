@@ -47,7 +47,7 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
   });
 
   const textColor =
-    teamColor === "red" ? "#ff4d4f" : teamColor === "blue" ? "#4d88ff" : "white";
+    teamColor === "red" ? "#ff0000" : teamColor === "blue" ? "#0000ff" : "white";
 
   const updateAndSave = (updated: ScoreData) => {
   const autoScore = (
@@ -104,7 +104,7 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
   return (
     <div
       style={{
-        backgroundColor: "#1a1a1a",
+        backgroundColor: "#000000",
         color: textColor,
         padding: "2rem",
         display: "flex",

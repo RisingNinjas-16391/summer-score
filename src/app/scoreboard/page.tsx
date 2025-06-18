@@ -169,7 +169,7 @@ export default function Scoreboard() {
   }, []);
 
 return (
-  <div style={{ backgroundColor: "#1a1a1a", color: "white", minHeight: "100vh", padding: "1rem" }}>
+  <div style={{ backgroundColor: "#000000", color: "#ffffff", minHeight: "100vh", padding: "1rem" }}>
     <center>
       <Typography variant="h3" component="div" gutterBottom>
         {match.match_number}
@@ -181,7 +181,7 @@ return (
       <Grid size={6}>
         <div
           style={{
-            backgroundColor: "#2b2b2b",
+            backgroundColor: "#ff0000",
             padding: "2rem",
             borderRadius: "12px",
             display: "flex",
@@ -190,10 +190,10 @@ return (
             justifyContent: "center",
           }}
         >
-          <Typography variant="h2" style={{ color: "#ff1000" }} gutterBottom>
+          <Typography variant="h2" style={{ color: "#ffffff" }} gutterBottom>
             {match.red_name}
           </Typography>
-          <Typography variant="h1" style={{ color: "#ff1000" }}>
+          <Typography variant="h1" style={{ color: "#ffffff" }}>
             {redScore}
           </Typography>
         </div>
@@ -203,7 +203,7 @@ return (
       <Grid size={6}>
         <div
           style={{
-            backgroundColor: "#2b2b2b",
+            backgroundColor: "#0000ff",
             padding: "2rem",
             borderRadius: "12px",
             display: "flex",
@@ -212,10 +212,10 @@ return (
             justifyContent: "center",
           }}
         >
-          <Typography variant="h2" style={{ color: "#0091ff" }} gutterBottom>
+          <Typography variant="h2" style={{ color: "#ffffff" }} gutterBottom>
             {match.blue_name}
           </Typography>
-          <Typography variant="h1" style={{ color: "#0091ff" }}>
+          <Typography variant="h1" style={{ color: "#ffffff" }}>
             {blueScore}
           </Typography>
         </div>

@@ -73,7 +73,7 @@ export default function Scoreboard() {
     endgame: 0,
   });
 
-  const [timer, setTimer] = useState(150);
+  const [timer, setTimer] = useState(120);
   const [isRunning, setIsRunning] = useState(false);
   const [isInCountdown, setIsInCountdown] = useState(false);
   const [countdown, setCountdown] = useState(8);
@@ -148,7 +148,7 @@ export default function Scoreboard() {
         }
         if (data?.reset) {
           setIsRunning(false);
-          setTimer(150);
+          setTimer(120);
           setIsInCountdown(false);
           setCountdown(8);
           setPlayedTransition(false);
@@ -194,7 +194,7 @@ export default function Scoreboard() {
     let current = timer;
     const interval = setInterval(() => {
       current--;
-      if (current === 120 && !playedTransition) {
+      if (current === 90 && !playedTransition) {
         clearInterval(interval);
         setIsInCountdown(true);
         setCountdown(8);
@@ -232,7 +232,7 @@ export default function Scoreboard() {
         if (newCount <= 0) {
           clearInterval(countdownInterval);
           setIsInCountdown(false);
-          setTimer(120);
+          setTimer(90);
         }
         return newCount;
       });

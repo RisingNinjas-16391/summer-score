@@ -20,7 +20,9 @@ export default function ScoreIndex() {
   };
 
   return (
-    <div style={{ backgroundColor: "#000000", color: "white", padding: "2rem" }}>
+    <div
+      style={{ backgroundColor: "#000000", color: "white", padding: "2rem" }}
+    >
       <center>
         <h1 style={{ fontSize: "2rem", fontWeight: "bold" }}>Score Index</h1>
 
@@ -155,12 +157,16 @@ export default function ScoreIndex() {
                 autoPeg: 0,
                 autoUpright: 0,
                 autoKnocked: 0,
+                autoScore: 0,
                 teleopPeg: 0,
                 teleopUpright: 0,
                 teleopKnocked: 0,
                 teleopRows: 0,
+                teleopScore: 0,
                 climbed: false,
                 parked: false,
+                preliminaryScore: 0,
+                endgameScore: 0,
                 penalties: 0,
                 totalScore: 0,
               });
@@ -170,15 +176,24 @@ export default function ScoreIndex() {
                 autoPeg: 0,
                 autoUpright: 0,
                 autoKnocked: 0,
+                autoScore: 0,
                 teleopPeg: 0,
                 teleopUpright: 0,
                 teleopKnocked: 0,
                 teleopRows: 0,
+                teleopScore: 0,
                 climbed: false,
                 parked: false,
+                preliminaryScore: 0,
+                endgameScore: 0,
                 penalties: 0,
                 totalScore: 0,
               });
+
+              // Clear the input fields
+              setMatchNumber("");
+              setRedName("");
+              setBlueName("");
             }}
           >
             Reset Match

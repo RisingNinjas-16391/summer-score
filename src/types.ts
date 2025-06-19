@@ -9,10 +9,16 @@ export type ScoreData = {
   autoPeg: number;
   autoUpright: number;
   autoKnocked: number;
+  parked: boolean;
+  autoScore: number;
   teleopPeg: number;
   teleopUpright: number;
   teleopKnocked: number;
   teleopRows: number;
+  teleopScore: number;
   climbed: boolean;
+  endgameScore: number;
   totalScore: number;
+  penalties: number;
+  preliminaryScore: number;
 };

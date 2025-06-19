@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Typography, Grid } from "@mui/material";
@@ -35,8 +35,43 @@ export default function Scoreboard() {
   const [redPenalties, setRedPenalties] = useState(0);
   const [bluePenalties, setBluePenalties] = useState(0);
 
-  const [redBreakdown, setRedBreakdown] = useState({ auto: 0, teleop: 0, endgame: 0 });
-  const [blueBreakdown, setBlueBreakdown] = useState({ auto: 0, teleop: 0, endgame: 0 });
+  const [redStatus, setRedStatus] = useState("⠀");
+  const [blueStatus, setBlueStatus] = useState("⠀");
+  const redTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const blueTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  <style jsx global>{`
+    .fade-message {
+      opacity: 0;
+      animation: fadeInOut 1s ease-in-out forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  `}</style>;
+
+  const [redBreakdown, setRedBreakdown] = useState({
+    auto: 0,
+    teleop: 0,
+    endgame: 0,
+  });
+  const [blueBreakdown, setBlueBreakdown] = useState({
+    auto: 0,
+    teleop: 0,
+    endgame: 0,
+  });
 
   const [timer, setTimer] = useState(150);
   const [isRunning, setIsRunning] = useState(false);
@@ -96,53 +131,62 @@ export default function Scoreboard() {
   };
 
   useEffect(() => {
-    const unsubTimer = onSnapshot(doc(db, "realtime", "timer"), async (docSnap) => {
-      const data = docSnap.data();
-      if (data?.start) {
-        setIsRunning(true);
-        setIsPaused(false);
-        setPlayedTransition(false);
-        setShowFinalScore(false);
-        setShowResultsScreen(false);
-        sounds.matchStart?.play();
-        await updateDoc(doc(db, "realtime", "timer"), { start: false, paused: false });
-      }
-      if (data?.reset) {
-        setIsRunning(false);
-        setTimer(150);
-        setIsInCountdown(false);
-        setCountdown(8);
-        setPlayedTransition(false);
-        setIsPaused(false);
-        setIsMatchOver(false);
-        setShowAnimation(false);
-        setShowFinalScore(false);
-        setShowResultsScreen(false);
-        await updateDoc(doc(db, "realtime", "timer"), { reset: false, finished: false });
-      }
-      if (data?.paused) {
-        setIsPaused(true);
-        setIsRunning(false);
-        sounds.aborted?.play();
-      }
-      if (data?.finished) {
-        setIsMatchOver(true);
-        setShowFinalScore(true);
-        setShowAnimation(true);
-        sounds.results?.play();
+    const unsubTimer = onSnapshot(
+      doc(db, "realtime", "timer"),
+      async (docSnap) => {
+        const data = docSnap.data();
+        if (data?.start) {
+          setIsRunning(true);
+          setIsPaused(false);
+          setPlayedTransition(false);
+          setShowFinalScore(false);
+          setShowResultsScreen(false);
+          sounds.matchStart?.play();
+          await updateDoc(doc(db, "realtime", "timer"), {
+            start: false,
+            paused: false,
+          });
+        }
+        if (data?.reset) {
+          setIsRunning(false);
+          setTimer(150);
+          setIsInCountdown(false);
+          setCountdown(8);
+          setPlayedTransition(false);
+          setIsPaused(false);
+          setIsMatchOver(false);
+          setShowAnimation(false);
+          setShowFinalScore(false);
+          setShowResultsScreen(false);
+          await updateDoc(doc(db, "realtime", "timer"), {
+            reset: false,
+            finished: false,
+          });
+        }
+        if (data?.paused) {
+          setIsPaused(true);
+          setIsRunning(false);
+          sounds.aborted?.play();
+        }
+        if (data?.finished) {
+          setIsMatchOver(true);
+          setShowFinalScore(true);
+          setShowAnimation(true);
+          sounds.results?.play();
 
-        const redFinal = redScore + bluePenalties * 5;
-        const blueFinal = blueScore + redPenalties * 5;
+          const redFinal = redScore + bluePenalties * 5;
+          const blueFinal = blueScore + redPenalties * 5;
 
-        setAnimationSrc(
-          redFinal > blueFinal
-            ? "/animations/power_play_red.webm"
-            : blueFinal > redFinal
-            ? "/animations/power_play_blue.webm"
-            : "/animations/power_play_tie.webm"
-        );
+          setAnimationSrc(
+            redFinal > blueFinal
+              ? "/animations/power_play_red.webm"
+              : blueFinal > redFinal
+              ? "/animations/power_play_blue.webm"
+              : "/animations/power_play_tie.webm"
+          );
+        }
       }
-    });
+    );
 
     return () => unsubTimer();
   }, [sounds, redScore, blueScore, redPenalties, bluePenalties]);
@@ -240,123 +284,293 @@ export default function Scoreboard() {
     };
   }, []);
 
-  const redDisplay = showFinalScore
-    ? redScore + bluePenalties * 5
-    : redPrelim;
+useEffect(() => {
+  let currentRedPenalties = 0;
+  let currentBluePenalties = 0;
+
+  const unsubRed = onSnapshot(doc(db, "realtime", "red"), (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data() as ScoreData;
+      const newPenalties = data.penalties || 0;
+
+      setRedScore(data.totalScore || 0);
+      setRedPrelim(data.preliminaryScore || 0);
+      setRedBreakdown({
+        auto: data.autoScore || 0,
+        teleop: data.teleopScore || 0,
+        endgame: data.endgameScore || 0,
+      });
+
+      if (newPenalties > currentRedPenalties) {
+        setRedStatus("PENALTY GIVEN TO RED!");
+        if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
+        redTimeoutRef.current = setTimeout(() => setRedStatus("⠀"), 1000);
+      }
+
+      currentRedPenalties = newPenalties;
+      setRedPenalties(newPenalties);
+    }
+  });
+
+  const unsubBlue = onSnapshot(doc(db, "realtime", "blue"), (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data() as ScoreData;
+      const newPenalties = data.penalties || 0;
+
+      setBlueScore(data.totalScore || 0);
+      setBluePrelim(data.preliminaryScore || 0);
+      setBlueBreakdown({
+        auto: data.autoScore || 0,
+        teleop: data.teleopScore || 0,
+        endgame: data.endgameScore || 0,
+      });
+
+      if (newPenalties > currentBluePenalties) {
+        setBlueStatus("PENALTY GIVEN TO BLUE!");
+        if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
+        blueTimeoutRef.current = setTimeout(() => setBlueStatus("⠀"), 1000);
+      }
+
+      currentBluePenalties = newPenalties;
+      setBluePenalties(newPenalties);
+    }
+  });
+
+  return () => {
+    unsubRed();
+    unsubBlue();
+    if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
+    if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
+  };
+}, []);
+
+
+  const redDisplay = showFinalScore ? redScore + bluePenalties * 5 : redPrelim;
 
   const blueDisplay = showFinalScore
     ? blueScore + redPenalties * 5
     : bluePrelim;
 
   <style jsx global>{`
-  .fade-in {
-    animation: fadeIn 1s ease-in-out;
-  }
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-`}</style>
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  `}</style>;
 
-if (showResultsScreen) {
-  const isRedWinner = redDisplay > blueDisplay;
-  const isBlueWinner = blueDisplay > redDisplay;
+  const fontSizes = {
+    title: "3rem",
+    teamName: "2rem",
+    score: "15rem",
+    win: "5rem",
+    breakdown: "1.875rem",
+  };
 
-  return (
-    <div className="fade-in" style={{ backgroundColor: "#000000", padding: "2rem", color: "#ffffff" }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
-        {match.match_number} — Results
-      </Typography>
+  if (showResultsScreen) {
+    const isRedWinner = redDisplay > blueDisplay;
+    const isBlueWinner = blueDisplay > redDisplay;
 
-      <Grid container spacing={4} paddingTop={4}>
-        {/* Red Side */}
-        <Grid size={6} style={{ textAlign: "center" }}>
-          <div
-            style={{
-              backgroundColor: "#ff0000",
-              borderRadius: "12px",
-              padding: "2rem",
-              color: "#ffffff",
-            }}
-          >
-            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-              {match.red_name}
-            </Typography>
-            <Typography variant="h2" sx={{ marginBottom: "1rem", fontWeight: "bold" }}>
-              {redDisplay}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              AUTONOMOUS: {redBreakdown.auto}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              DRIVER-CONTROL: {redBreakdown.teleop}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              END GAME: {redBreakdown.endgame}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              BLUE PENALTY: {bluePenalties * 5}
-            </Typography>
-          </div>
-          {isRedWinner && (
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginTop: "1rem", color: "#ffffff" }}
+    return (
+      <div
+        className="fade-in"
+        style={{
+          backgroundColor: "#000000",
+          padding: "2rem",
+          color: "#ffffff",
+        }}
+      >
+        <Typography
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: "bold", fontSize: fontSizes.title }}
+        >
+          {match.match_number} — Results
+        </Typography>
+
+        <Grid container spacing={4} paddingTop={4}>
+          {/* Red Side */}
+          <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "right" }}>
+            <div
+              style={{
+                backgroundColor: "#ff0000",
+                borderRadius: "12px",
+                padding: "2rem",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
             >
-              WIN
-            </Typography>
-          )}
-        </Grid>
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: fontSizes.teamName,
+                  alignSelf: "flex-end",
+                  color: "#ffffff",
+                }}
+              >
+                {match.red_name}
+              </Typography>
 
-        {/* Blue Side */}
-        <Grid size={6} style={{ textAlign: "center" }}>
-          <div
-            style={{
-              backgroundColor: "#0000ff",
-              borderRadius: "12px",
-              padding: "2rem",
-              color: "#ffffff",
-            }}
-          >
-            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-              {match.blue_name}
-            </Typography>
-            <Typography variant="h2" sx={{ marginBottom: "1rem", fontWeight: "bold" }}>
-              {blueDisplay}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              AUTONOMOUS: {blueBreakdown.auto}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              DRIVER-CONTROL: {blueBreakdown.teleop}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              END GAME: {blueBreakdown.endgame}
-            </Typography>
-            <Typography sx={{ fontWeight: "bold" }}>
-              RED PENALTY: {redPenalties * 5}
-            </Typography>
-          </div>
-          {isBlueWinner && (
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: "bold", marginTop: "1rem", color: "#ffffff" }}
+              <div
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#000000",
+                  padding: "1rem 2rem",
+                  borderRadius: "8px",
+                  marginTop: "1rem",
+                  marginBottom: "1rem",
+                  width: "400px",
+                  textAlign: "center", // ensure text is centered
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center", // horizontal centering
+                  justifyContent: "center", // vertical centering (if needed)
+                }}
+              >
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.score }}
+                >
+                  {redDisplay}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.win }}
+                >
+                  {isRedWinner ? "WIN" : "⠀"}
+                </Typography>
+              </div>
+
+              <div
+                style={{
+                  backgroundColor: "#2c2c2c",
+                  color: "#ffffff",
+                  padding: "1rem 2rem",
+                  borderRadius: "8px",
+                  width: "400px",
+                  textAlign: "right",
+                }}
+              >
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  AUTONOMOUS: {redBreakdown.auto}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  DRIVER-CONTROL: {redBreakdown.teleop}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  END GAME: {redBreakdown.endgame}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  BLUE PENALTY: {bluePenalties * 5}
+                </Typography>
+              </div>
+            </div>
+          </Grid>
+
+          {/* Blue Side */}
+          <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "left" }}>
+            <div
+              style={{
+                backgroundColor: "#0000ff",
+                borderRadius: "12px",
+                padding: "2rem",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
             >
-              WIN
-            </Typography>
-          )}
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: fontSizes.teamName,
+                  color: "#ffffff",
+                }}
+              >
+                {match.blue_name}
+              </Typography>
+
+              <div
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#000000",
+                  padding: "1rem 2rem",
+                  borderRadius: "8px",
+                  marginTop: "1rem",
+                  marginBottom: "1rem",
+                  width: "400px",
+                  textAlign: "center", // ensure text is centered
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center", // horizontal centering
+                  justifyContent: "center", // vertical centering (if needed)
+                }}
+              >
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.score }}
+                >
+                  {blueDisplay}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.win }}
+                >
+                  {isBlueWinner ? "WIN" : "⠀"}
+                </Typography>
+              </div>
+
+              <div
+                style={{
+                  backgroundColor: "#2c2c2c",
+                  color: "#ffffff",
+                  padding: "1rem 2rem",
+                  borderRadius: "8px",
+                  width: "400px",
+                  textAlign: "left",
+                }}
+              >
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  AUTONOMOUS: {blueBreakdown.auto}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  DRIVER-CONTROL: {blueBreakdown.teleop}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  END GAME: {blueBreakdown.endgame}
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
+                >
+                  RED PENALTY: {redPenalties * 5}
+                </Typography>
+              </div>
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
-  );
-}
-
-
-
-
-
+      </div>
+    );
+  }
   return (
-    <div style={{ backgroundColor: "#000000", color: "#ffffff", padding: "1rem" }}>
+    <div
+      style={{ backgroundColor: "#000000", color: "#ffffff", padding: "1rem" }}
+    >
       <center>
         <Typography variant="h3" component="div" gutterBottom>
           {match.match_number}
@@ -365,16 +579,52 @@ if (showResultsScreen) {
 
       <Grid container spacing={4} paddingX={5} paddingTop={3} paddingBottom={1}>
         <Grid size={6}>
-          <div style={{ backgroundColor: "#ff0000", padding: "2rem", borderRadius: "12px", textAlign: "center" }}>
+          <div
+            style={{
+              backgroundColor: "#ff0000",
+              padding: "2rem",
+              borderRadius: "12px",
+              textAlign: "center",
+            }}
+          >
             <Typography variant="h2">{match.red_name}</Typography>
             <Typography variant="h1">{redDisplay}</Typography>
           </div>
+          <Typography
+            className={redStatus !== "⠀" ? "fade-message" : ""}
+            sx={{
+              fontWeight: "bold",
+              color: "#ffff00",
+              marginTop: "1rem",
+              textAlign: "center",
+            }}
+          >
+            {redStatus}
+          </Typography>
         </Grid>
         <Grid size={6}>
-          <div style={{ backgroundColor: "#0000ff", padding: "2rem", borderRadius: "12px", textAlign: "center" }}>
+          <div
+            style={{
+              backgroundColor: "#0000ff",
+              padding: "2rem",
+              borderRadius: "12px",
+              textAlign: "center",
+            }}
+          >
             <Typography variant="h2">{match.blue_name}</Typography>
             <Typography variant="h1">{blueDisplay}</Typography>
           </div>
+          <Typography
+            className={blueStatus !== "⠀" ? "fade-message" : ""}
+            sx={{
+              fontWeight: "bold",
+              color: "#ffff00",
+              marginTop: "1rem",
+              textAlign: "center",
+            }}
+          >
+            {blueStatus}
+          </Typography>
         </Grid>
       </Grid>
 
@@ -382,13 +632,23 @@ if (showResultsScreen) {
         <Typography variant="h1" sx={{ fontSize: "17rem" }}>
           {isInCountdown
             ? `0:${countdown.toString().padStart(2, "0")}`
-            : `${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, "0")}`}
+            : `${Math.floor(timer / 60)}:${(timer % 60)
+                .toString()
+                .padStart(2, "0")}`}
         </Typography>
       </Grid>
 
       {showAnimation && animationSrc && (
         <div
-          style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 9999, backgroundColor: "#000000" }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 9999,
+            backgroundColor: "#000000",
+          }}
         >
           <video
             src={animationSrc}

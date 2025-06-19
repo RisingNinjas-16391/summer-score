@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Typography, Grid } from "@mui/material";
@@ -79,7 +79,6 @@ export default function Scoreboard() {
   const [countdown, setCountdown] = useState(8);
   const [playedTransition, setPlayedTransition] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [isMatchOver, setIsMatchOver] = useState(false);
   const [showFinalScore, setShowFinalScore] = useState(false);
   const [showResultsScreen, setShowResultsScreen] = useState(false);
 
@@ -112,7 +111,7 @@ export default function Scoreboard() {
     }
   }, []);
 
-  const playTwoTransitionSounds = async () => {
+  const playTwoTransitionSounds = useCallback(async () => {
     const { autonomousComplete, driverControllers } = sounds;
     if (!autonomousComplete || !driverControllers) return;
 
@@ -128,7 +127,7 @@ export default function Scoreboard() {
     await new Promise<void>((resolve) => {
       driverControllers.onended = () => resolve();
     });
-  };
+  }, [sounds]);
 
   useEffect(() => {
     const unsubTimer = onSnapshot(
@@ -154,7 +153,6 @@ export default function Scoreboard() {
           setCountdown(8);
           setPlayedTransition(false);
           setIsPaused(false);
-          setIsMatchOver(false);
           setShowAnimation(false);
           setShowFinalScore(false);
           setShowResultsScreen(false);
@@ -169,7 +167,6 @@ export default function Scoreboard() {
           sounds.aborted?.play();
         }
         if (data?.finished) {
-          setIsMatchOver(true);
           setShowFinalScore(true);
           setShowAnimation(true);
           sounds.results?.play();
@@ -210,13 +207,20 @@ export default function Scoreboard() {
         clearInterval(interval);
         sounds.matchEnd?.play();
         setIsRunning(false);
-        setIsMatchOver(true);
       }
       setTimer(current);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, isInCountdown, playedTransition, timer, isPaused, sounds]);
+  }, [
+    isRunning,
+    isInCountdown,
+    playedTransition,
+    timer,
+    isPaused,
+    sounds,
+    playTwoTransitionSounds,
+  ]);
 
   useEffect(() => {
     if (!isInCountdown || countdown <= 0) return;
@@ -284,66 +288,65 @@ export default function Scoreboard() {
     };
   }, []);
 
-useEffect(() => {
-  let currentRedPenalties = 0;
-  let currentBluePenalties = 0;
+  useEffect(() => {
+    let currentRedPenalties = 0;
+    let currentBluePenalties = 0;
 
-  const unsubRed = onSnapshot(doc(db, "realtime", "red"), (docSnap) => {
-    if (docSnap.exists()) {
-      const data = docSnap.data() as ScoreData;
-      const newPenalties = data.penalties || 0;
+    const unsubRed = onSnapshot(doc(db, "realtime", "red"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data() as ScoreData;
+        const newPenalties = data.penalties || 0;
 
-      setRedScore(data.totalScore || 0);
-      setRedPrelim(data.preliminaryScore || 0);
-      setRedBreakdown({
-        auto: data.autoScore || 0,
-        teleop: data.teleopScore || 0,
-        endgame: data.endgameScore || 0,
-      });
+        setRedScore(data.totalScore || 0);
+        setRedPrelim(data.preliminaryScore || 0);
+        setRedBreakdown({
+          auto: data.autoScore || 0,
+          teleop: data.teleopScore || 0,
+          endgame: data.endgameScore || 0,
+        });
 
-      if (newPenalties > currentRedPenalties) {
-        setRedStatus("PENALTY GIVEN TO RED!");
-        if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
-        redTimeoutRef.current = setTimeout(() => setRedStatus("⠀"), 1000);
+        if (newPenalties > currentRedPenalties) {
+          setRedStatus("PENALTY GIVEN TO RED!");
+          if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
+          redTimeoutRef.current = setTimeout(() => setRedStatus("⠀"), 1000);
+        }
+
+        currentRedPenalties = newPenalties;
+        setRedPenalties(newPenalties);
       }
+    });
 
-      currentRedPenalties = newPenalties;
-      setRedPenalties(newPenalties);
-    }
-  });
+    const unsubBlue = onSnapshot(doc(db, "realtime", "blue"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data() as ScoreData;
+        const newPenalties = data.penalties || 0;
 
-  const unsubBlue = onSnapshot(doc(db, "realtime", "blue"), (docSnap) => {
-    if (docSnap.exists()) {
-      const data = docSnap.data() as ScoreData;
-      const newPenalties = data.penalties || 0;
+        setBlueScore(data.totalScore || 0);
+        setBluePrelim(data.preliminaryScore || 0);
+        setBlueBreakdown({
+          auto: data.autoScore || 0,
+          teleop: data.teleopScore || 0,
+          endgame: data.endgameScore || 0,
+        });
 
-      setBlueScore(data.totalScore || 0);
-      setBluePrelim(data.preliminaryScore || 0);
-      setBlueBreakdown({
-        auto: data.autoScore || 0,
-        teleop: data.teleopScore || 0,
-        endgame: data.endgameScore || 0,
-      });
+        if (newPenalties > currentBluePenalties) {
+          setBlueStatus("PENALTY GIVEN TO BLUE!");
+          if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
+          blueTimeoutRef.current = setTimeout(() => setBlueStatus("⠀"), 1000);
+        }
 
-      if (newPenalties > currentBluePenalties) {
-        setBlueStatus("PENALTY GIVEN TO BLUE!");
-        if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
-        blueTimeoutRef.current = setTimeout(() => setBlueStatus("⠀"), 1000);
+        currentBluePenalties = newPenalties;
+        setBluePenalties(newPenalties);
       }
+    });
 
-      currentBluePenalties = newPenalties;
-      setBluePenalties(newPenalties);
-    }
-  });
-
-  return () => {
-    unsubRed();
-    unsubBlue();
-    if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
-    if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
-  };
-}, []);
-
+    return () => {
+      unsubRed();
+      unsubBlue();
+      if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
+      if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
+    };
+  }, []);
 
   const redDisplay = showFinalScore ? redScore + bluePenalties * 5 : redPrelim;
 
@@ -366,11 +369,11 @@ useEffect(() => {
   `}</style>;
 
   const fontSizes = {
-    title: "3rem",
-    teamName: "2rem",
-    score: "15rem",
-    win: "5rem",
-    breakdown: "1.875rem",
+    title: "clamp(1.5rem, 4vw, 3rem)",
+    teamName: "clamp(1rem, 3vw, 2.5rem)",
+    score: "clamp(4rem, 10vw, 10rem)",
+    win: "clamp(2rem, 6vw, 6rem)",
+    breakdown: "clamp(0.875rem, 2vw, 1.875rem)",
   };
 
   if (showResultsScreen) {
@@ -378,12 +381,19 @@ useEffect(() => {
     const isBlueWinner = blueDisplay > redDisplay;
 
     return (
+      // RESULTS SCREEN
       <div
         className="fade-in"
         style={{
+          height: "100vh",
+          width: "100vw",
+          overflow: "hidden",
           backgroundColor: "#000000",
-          padding: "2rem",
           color: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "1rem",
         }}
       >
         <Typography
@@ -426,7 +436,8 @@ useEffect(() => {
                   borderRadius: "8px",
                   marginTop: "1rem",
                   marginBottom: "1rem",
-                  width: "400px",
+                  width: "80%", // or "40vw", depending on layout
+                  maxWidth: "400px", // optional
                   textAlign: "center", // ensure text is centered
                   display: "flex",
                   flexDirection: "column",
@@ -568,8 +579,19 @@ useEffect(() => {
     );
   }
   return (
+    // SCOREBOARD
     <div
-      style={{ backgroundColor: "#000000", color: "#ffffff", padding: "1rem" }}
+      style={{
+        height: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+        backgroundColor: "#000000",
+        color: "#ffffff",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: "1rem",
+      }}
     >
       <center>
         <Typography variant="h3" component="div" gutterBottom>
@@ -577,7 +599,7 @@ useEffect(() => {
         </Typography>
       </center>
 
-      <Grid container spacing={4} paddingX={5} paddingTop={3} paddingBottom={1}>
+      <Grid container spacing={1} paddingX={2} paddingTop={1} paddingBottom={1}>
         <Grid size={6}>
           <div
             style={{
@@ -595,6 +617,7 @@ useEffect(() => {
             sx={{
               fontWeight: "bold",
               color: "#ffff00",
+              fontSize: "2rem",
               marginTop: "1rem",
               textAlign: "center",
             }}
@@ -618,6 +641,7 @@ useEffect(() => {
             className={blueStatus !== "⠀" ? "fade-message" : ""}
             sx={{
               fontWeight: "bold",
+              fontSize: "2rem",
               color: "#ffff00",
               marginTop: "1rem",
               textAlign: "center",
@@ -629,7 +653,7 @@ useEffect(() => {
       </Grid>
 
       <Grid container justifyContent="center" paddingTop={2}>
-        <Typography variant="h1" sx={{ fontSize: "17rem" }}>
+        <Typography variant="h1" sx={{ fontSize: "clamp(6rem, 15vw, 12rem)" }}>
           {isInCountdown
             ? `0:${countdown.toString().padStart(2, "0")}`
             : `${Math.floor(timer / 60)}:${(timer % 60)
@@ -654,6 +678,11 @@ useEffect(() => {
             src={animationSrc}
             autoPlay
             onEnded={() => {
+              setShowAnimation(false);
+              setShowResultsScreen(true);
+            }}
+            onError={() => {
+              console.error("Animation video failed to load");
               setShowAnimation(false);
               setShowResultsScreen(true);
             }}

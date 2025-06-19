@@ -52,10 +52,10 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
   });
 
   const [opponentPenalties, setOpponentPenalties] = useState(0);
-  const opponentColor = teamColor === "red" ? "blue" : "red";
 
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, "realtime", opponentColor), (snap) => {
+    const color = teamColor === "red" ? "blue" : "red";
+    const unsub = onSnapshot(doc(db, "realtime", color), (snap) => {
       const data = snap.data();
       if (data?.penalties !== undefined) {
         setOpponentPenalties(data.penalties);
@@ -70,34 +70,6 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
       : teamColor === "blue"
       ? "#0000ff"
       : "white";
-
-  const calculateBaseScore = (s: ScoreData) => {
-    const autoScore =
-      (s.autoPeg * 5 +
-        s.autoUpright * 2 +
-        s.autoKnocked * 1 +
-        (s.parked ? 2.5 : 0)) *
-      2;
-    const teleopScore =
-      s.teleopPeg * 5 + s.teleopUpright * 2 + s.teleopKnocked * 1;
-    const endgameScore = s.teleopRows * 5 + (s.climbed ? 10 : 0);
-    return autoScore + teleopScore + endgameScore;
-  };
-
-  const calculatePreliminaryScore = (s: ScoreData) => {
-    const autoScore =
-      (s.autoPeg * 5 +
-        s.autoUpright * 2 +
-        s.autoKnocked * 1 +
-        (s.parked ? 2.5 : 0)) *
-      2;
-    const teleopScore =
-      s.teleopPeg * 5 + s.teleopUpright * 2 + s.teleopKnocked * 1;
-    return autoScore + teleopScore;
-  };
-
-  const calculateTotalScore = (s: ScoreData) =>
-    calculatePreliminaryScore(s) + s.teleopRows * 5 + (s.climbed ? 10 : 0);
 
   const updateAndSave = (updated: ScoreData) => {
     const autoScore =

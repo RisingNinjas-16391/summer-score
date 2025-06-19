@@ -202,7 +202,7 @@ export default function Scoreboard() {
         playTwoTransitionSounds();
         return;
       }
-      if (current === 30) sounds.endgameStart?.play();
+      if (current === 15) sounds.endgameStart?.play();
       if (current === 0) {
         clearInterval(interval);
         sounds.matchEnd?.play();

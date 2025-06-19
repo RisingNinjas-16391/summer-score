@@ -14,7 +14,11 @@ interface MatchData {
 interface ScoreData {
   teamColor: "red" | "blue";
   totalScore: number;
+  preliminaryScore?: number;
   penalties?: number;
+  autoScore?: number;
+  teleopScore?: number;
+  endgameScore?: number;
 }
 
 export default function Scoreboard() {
@@ -26,8 +30,13 @@ export default function Scoreboard() {
 
   const [redScore, setRedScore] = useState(0);
   const [blueScore, setBlueScore] = useState(0);
+  const [redPrelim, setRedPrelim] = useState(0);
+  const [bluePrelim, setBluePrelim] = useState(0);
   const [redPenalties, setRedPenalties] = useState(0);
   const [bluePenalties, setBluePenalties] = useState(0);
+
+  const [redBreakdown, setRedBreakdown] = useState({ auto: 0, teleop: 0, endgame: 0 });
+  const [blueBreakdown, setBlueBreakdown] = useState({ auto: 0, teleop: 0, endgame: 0 });
 
   const [timer, setTimer] = useState(150);
   const [isRunning, setIsRunning] = useState(false);
@@ -36,10 +45,11 @@ export default function Scoreboard() {
   const [playedTransition, setPlayedTransition] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMatchOver, setIsMatchOver] = useState(false);
+  const [showFinalScore, setShowFinalScore] = useState(false);
+  const [showResultsScreen, setShowResultsScreen] = useState(false);
 
   const [showAnimation, setShowAnimation] = useState(false);
   const [animationSrc, setAnimationSrc] = useState("");
-  const [showFinalScore, setShowFinalScore] = useState(false);
 
   const [sounds, setSounds] = useState({
     matchStart: undefined as HTMLAudioElement | undefined,
@@ -93,6 +103,7 @@ export default function Scoreboard() {
         setIsPaused(false);
         setPlayedTransition(false);
         setShowFinalScore(false);
+        setShowResultsScreen(false);
         sounds.matchStart?.play();
         await updateDoc(doc(db, "realtime", "timer"), { start: false, paused: false });
       }
@@ -106,6 +117,7 @@ export default function Scoreboard() {
         setIsMatchOver(false);
         setShowAnimation(false);
         setShowFinalScore(false);
+        setShowResultsScreen(false);
         await updateDoc(doc(db, "realtime", "timer"), { reset: false, finished: false });
       }
       if (data?.paused) {
@@ -115,19 +127,20 @@ export default function Scoreboard() {
       }
       if (data?.finished) {
         setIsMatchOver(true);
-        sounds.results?.play();
+        setShowFinalScore(true);
         setShowAnimation(true);
+        sounds.results?.play();
 
         const redFinal = redScore + bluePenalties * 5;
         const blueFinal = blueScore + redPenalties * 5;
 
-        if (redFinal > blueFinal) {
-          setAnimationSrc("/animations/power_play_red.webm");
-        } else if (blueFinal > redFinal) {
-          setAnimationSrc("/animations/power_play_blue.webm");
-        } else {
-          setAnimationSrc("/animations/power_play_tie.webm");
-        }
+        setAnimationSrc(
+          redFinal > blueFinal
+            ? "/animations/power_play_red.webm"
+            : blueFinal > redFinal
+            ? "/animations/power_play_blue.webm"
+            : "/animations/power_play_tie.webm"
+        );
       }
     });
 
@@ -195,16 +208,28 @@ export default function Scoreboard() {
     const unsubRed = onSnapshot(doc(db, "realtime", "red"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data() as ScoreData;
-        if (!isMatchOver) setRedScore(data.totalScore || 0);
+        setRedScore(data.totalScore || 0);
+        setRedPrelim(data.preliminaryScore || 0);
         setRedPenalties(data.penalties || 0);
+        setRedBreakdown({
+          auto: data.autoScore || 0,
+          teleop: data.teleopScore || 0,
+          endgame: data.endgameScore || 0,
+        });
       }
     });
 
     const unsubBlue = onSnapshot(doc(db, "realtime", "blue"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data() as ScoreData;
-        if (!isMatchOver) setBlueScore(data.totalScore || 0);
+        setBlueScore(data.totalScore || 0);
+        setBluePrelim(data.preliminaryScore || 0);
         setBluePenalties(data.penalties || 0);
+        setBlueBreakdown({
+          auto: data.autoScore || 0,
+          teleop: data.teleopScore || 0,
+          endgame: data.endgameScore || 0,
+        });
       }
     });
 
@@ -213,16 +238,122 @@ export default function Scoreboard() {
       unsubRed();
       unsubBlue();
     };
-  }, [isMatchOver]);
+  }, []);
 
-  // ✅ Final Display Logic
   const redDisplay = showFinalScore
     ? redScore + bluePenalties * 5
-    : redScore;
+    : redPrelim;
 
   const blueDisplay = showFinalScore
     ? blueScore + redPenalties * 5
-    : blueScore;
+    : bluePrelim;
+
+  <style jsx global>{`
+  .fade-in {
+    animation: fadeIn 1s ease-in-out;
+  }
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+`}</style>
+
+if (showResultsScreen) {
+  const isRedWinner = redDisplay > blueDisplay;
+  const isBlueWinner = blueDisplay > redDisplay;
+
+  return (
+    <div className="fade-in" style={{ backgroundColor: "#000000", padding: "2rem", color: "#ffffff" }}>
+      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: "bold" }}>
+        {match.match_number} — Results
+      </Typography>
+
+      <Grid container spacing={4} paddingTop={4}>
+        {/* Red Side */}
+        <Grid size={6} style={{ textAlign: "center" }}>
+          <div
+            style={{
+              backgroundColor: "#ff0000",
+              borderRadius: "12px",
+              padding: "2rem",
+              color: "#ffffff",
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              {match.red_name}
+            </Typography>
+            <Typography variant="h2" sx={{ marginBottom: "1rem", fontWeight: "bold" }}>
+              {redDisplay}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              AUTONOMOUS: {redBreakdown.auto}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              DRIVER-CONTROL: {redBreakdown.teleop}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              END GAME: {redBreakdown.endgame}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              BLUE PENALTY: {bluePenalties * 5}
+            </Typography>
+          </div>
+          {isRedWinner && (
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", marginTop: "1rem", color: "#ffffff" }}
+            >
+              WIN
+            </Typography>
+          )}
+        </Grid>
+
+        {/* Blue Side */}
+        <Grid size={6} style={{ textAlign: "center" }}>
+          <div
+            style={{
+              backgroundColor: "#0000ff",
+              borderRadius: "12px",
+              padding: "2rem",
+              color: "#ffffff",
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              {match.blue_name}
+            </Typography>
+            <Typography variant="h2" sx={{ marginBottom: "1rem", fontWeight: "bold" }}>
+              {blueDisplay}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              AUTONOMOUS: {blueBreakdown.auto}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              DRIVER-CONTROL: {blueBreakdown.teleop}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              END GAME: {blueBreakdown.endgame}
+            </Typography>
+            <Typography sx={{ fontWeight: "bold" }}>
+              RED PENALTY: {redPenalties * 5}
+            </Typography>
+          </div>
+          {isBlueWinner && (
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", marginTop: "1rem", color: "#ffffff" }}
+            >
+              WIN
+            </Typography>
+          )}
+        </Grid>
+      </Grid>
+    </div>
+  );
+}
+
+
+
+
 
   return (
     <div style={{ backgroundColor: "#000000", color: "#ffffff", padding: "1rem" }}>
@@ -234,37 +365,14 @@ export default function Scoreboard() {
 
       <Grid container spacing={4} paddingX={5} paddingTop={3} paddingBottom={1}>
         <Grid size={6}>
-          <div
-            style={{
-              backgroundColor: "#ff0000",
-              padding: "2rem",
-              borderRadius: "12px",
-              textAlign: "center",
-              opacity: showAnimation ? 0 : 1,
-              transition: "opacity 1s ease-in-out",
-            }}
-          >
-            <Typography variant="h2" gutterBottom>
-              {match.red_name}
-            </Typography>
+          <div style={{ backgroundColor: "#ff0000", padding: "2rem", borderRadius: "12px", textAlign: "center" }}>
+            <Typography variant="h2">{match.red_name}</Typography>
             <Typography variant="h1">{redDisplay}</Typography>
           </div>
         </Grid>
-
         <Grid size={6}>
-          <div
-            style={{
-              backgroundColor: "#0000ff",
-              padding: "2rem",
-              borderRadius: "12px",
-              textAlign: "center",
-              opacity: showAnimation ? 0 : 1,
-              transition: "opacity 1s ease-in-out",
-            }}
-          >
-            <Typography variant="h2" gutterBottom>
-              {match.blue_name}
-            </Typography>
+          <div style={{ backgroundColor: "#0000ff", padding: "2rem", borderRadius: "12px", textAlign: "center" }}>
+            <Typography variant="h2">{match.blue_name}</Typography>
             <Typography variant="h1">{blueDisplay}</Typography>
           </div>
         </Grid>
@@ -280,24 +388,14 @@ export default function Scoreboard() {
 
       {showAnimation && animationSrc && (
         <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 9999,
-            backgroundColor: "#000000",
-          }}
+          style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 9999, backgroundColor: "#000000" }}
         >
           <video
             src={animationSrc}
             autoPlay
             onEnded={() => {
               setShowAnimation(false);
-              setTimeout(() => {
-                setShowFinalScore(true);
-              }, 300);
+              setShowResultsScreen(true);
             }}
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />

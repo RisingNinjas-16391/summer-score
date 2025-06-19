@@ -26,6 +26,7 @@ export type ScoreData = {
   parked: boolean;
   penalties: number;
   totalScore: number;
+  preliminaryScore?: number;
 };
 
 interface ScoreFormProps {
@@ -51,7 +52,6 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
   const [opponentPenalties, setOpponentPenalties] = useState(0);
   const opponentColor = teamColor === "red" ? "blue" : "red";
 
-  // Listen to opponent penalty updates
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "realtime", opponentColor), (snap) => {
       const data = snap.data();
@@ -69,20 +69,38 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
     const autoScore =
       (s.autoPeg * 5 + s.autoUpright * 2 + s.autoKnocked * 1 + (s.parked ? 2.5 : 0)) * 2;
     const teleopScore =
-      s.teleopPeg * 5 + s.teleopUpright * 2 + s.teleopKnocked * 1 +
-      s.teleopRows * 5 + (s.climbed ? 10 : 0);
-    return autoScore + teleopScore;
+      s.teleopPeg * 5 + s.teleopUpright * 2 + s.teleopKnocked * 1;
+    const endgameScore = s.teleopRows * 5 + (s.climbed ? 10 : 0);
+    return autoScore + teleopScore + endgameScore;
   };
+
+  const calculatePreliminaryScore = (s: ScoreData) => {
+  const autoScore =
+    (s.autoPeg * 5 + s.autoUpright * 2 + s.autoKnocked * 1 + (s.parked ? 2.5 : 0)) * 2;
+  const teleopScore =
+    s.teleopPeg * 5 + s.teleopUpright * 2 + s.teleopKnocked * 1;
+  return autoScore + teleopScore;
+};
+
+const calculateTotalScore = (s: ScoreData) =>
+  calculatePreliminaryScore(s) + s.teleopRows * 5 + (s.climbed ? 10 : 0);
+
 
   const updateAndSave = (updated: ScoreData) => {
-    const baseScore = calculateBaseScore(updated);
-    const newScore = { ...updated, totalScore: baseScore };
-    setScore(newScore);
-
-    setDoc(doc(db, "realtime", teamColor), newScore).catch((err) => {
-      console.error(`[ERROR] Failed to send ${teamColor.toUpperCase()} score:`, err);
-    });
+  const preliminary = calculatePreliminaryScore(updated);
+  const total = preliminary + updated.teleopRows * 5 + (updated.climbed ? 10 : 0);
+  const newScore = {
+    ...updated,
+    preliminaryScore: preliminary,
+    totalScore: total,
   };
+
+  setScore(newScore);
+
+  setDoc(doc(db, "realtime", teamColor), newScore).catch((err) => {
+    console.error(`[ERROR] Failed to send ${teamColor.toUpperCase()} score:`, err);
+  });
+};
 
   const updateScore = (field: keyof ScoreData, delta: number) => {
     const newValue = Math.max(0, (score[field] as number) + delta);
@@ -126,49 +144,39 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
       </Typography>
 
       <Grid container spacing={4} justifyContent="center" maxWidth="lg">
-        {/* Auto Section */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <Typography variant="h5" style={{ color: textColor, marginBottom: "1rem" }}>Auto Period</Typography>
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <Typography variant="h5" style={{ color: textColor, marginBottom: "1rem" }}>Auto</Typography>
           {renderCounter("Peg", "autoPeg")}
           {renderCounter("Upright", "autoUpright")}
           {renderCounter("Knocked", "autoKnocked")}
           <FormControlLabel
-            control={
-              <Checkbox
-                checked={score.parked}
-                onChange={(e) => updateAndSave({ ...score, parked: e.target.checked })}
-                sx={{ color: textColor }}
-              />
-            }
+            control={<Checkbox checked={score.parked} onChange={(e) => updateAndSave({ ...score, parked: e.target.checked })} sx={{ color: textColor }} />}
             label={<Typography style={{ color: textColor }}>Parked?</Typography>}
             sx={{ mt: 2 }}
           />
         </Grid>
 
-        {/* Teleop Section */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <Typography variant="h5" style={{ color: textColor, marginBottom: "1rem" }}>Teleop Period</Typography>
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <Typography variant="h5" style={{ color: textColor, marginBottom: "1rem" }}>Driver-Control</Typography>
           {renderCounter("Peg", "teleopPeg")}
           {renderCounter("Upright", "teleopUpright")}
           {renderCounter("Knocked", "teleopKnocked")}
+        </Grid>
+
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <Typography variant="h5" style={{ color: textColor, marginBottom: "1rem" }}>Endgame</Typography>
           {renderCounter("Rows Owned", "teleopRows")}
           <FormControlLabel
-            control={
-              <Checkbox
-                checked={score.climbed}
-                onChange={(e) => updateAndSave({ ...score, climbed: e.target.checked })}
-                sx={{ color: textColor }}
-              />
-            }
+            control={<Checkbox checked={score.climbed} onChange={(e) => updateAndSave({ ...score, climbed: e.target.checked })} sx={{ color: textColor }} />}
             label={<Typography style={{ color: textColor }}>Climbed?</Typography>}
             sx={{ mt: 2 }}
           />
         </Grid>
 
-        {/* Penalties and Opponent Bonus */}
-        <Grid size={12}>
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <Typography variant="h5" style={{ color: textColor, marginBottom: "1rem" }}>Penalties</Typography>
           {renderCounter("Penalties", "penalties")}
-          <div style={{ marginTop: "1rem", textAlign: "center" }}>
+          <div style={{ marginTop: "1rem" }}>
             <Typography variant="subtitle1" style={{ color: textColor }}>
               Opponent Penalties: {opponentPenalties}
             </Typography>
@@ -178,7 +186,6 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           </div>
         </Grid>
 
-        {/* Displayed Total */}
         <Grid size={12} style={{ textAlign: "center" }}>
           <Typography variant="h5" style={{ color: textColor, marginTop: "1rem" }}>
             Total Score: {displayScore}

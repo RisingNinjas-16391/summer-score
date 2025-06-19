@@ -594,7 +594,7 @@ export default function Scoreboard() {
       }}
     >
       <center>
-        <Typography variant="h3" component="div" gutterBottom>
+        <Typography variant="h3" sx={{ fontWeight: "bold" }} component="div" gutterBottom>
           {match.match_number}
         </Typography>
       </center>
@@ -609,8 +609,8 @@ export default function Scoreboard() {
               textAlign: "center",
             }}
           >
-            <Typography variant="h2">{match.red_name}</Typography>
-            <Typography variant="h1">{redDisplay}</Typography>
+            <Typography variant="h2" sx={{ fontWeight: "bold" }}>{match.red_name}</Typography>
+            <Typography variant="h1" sx={{ fontWeight: "bold" }}>{redDisplay}</Typography>
           </div>
           <Typography
             className={redStatus !== "⠀" ? "fade-message" : ""}
@@ -634,8 +634,8 @@ export default function Scoreboard() {
               textAlign: "center",
             }}
           >
-            <Typography variant="h2">{match.blue_name}</Typography>
-            <Typography variant="h1">{blueDisplay}</Typography>
+            <Typography variant="h2" sx={{ fontWeight: "bold" }}>{match.blue_name}</Typography>
+            <Typography variant="h1" sx={{ fontWeight: "bold" }}>{blueDisplay}</Typography>
           </div>
           <Typography
             className={blueStatus !== "⠀" ? "fade-message" : ""}
@@ -653,7 +653,7 @@ export default function Scoreboard() {
       </Grid>
 
       <Grid container justifyContent="center" paddingTop={2}>
-        <Typography variant="h1" sx={{ fontSize: "clamp(6rem, 15vw, 12rem)" }}>
+        <Typography variant="h1" sx={{ fontSize: "clamp(6rem, 15vw, 12rem)", fontWeight: "bold" }}>
           {isInCountdown
             ? `0:${countdown.toString().padStart(2, "0")}`
             : `${Math.floor(timer / 60)}:${(timer % 60)

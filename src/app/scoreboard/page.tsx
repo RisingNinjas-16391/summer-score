@@ -99,7 +99,7 @@ export default function Scoreboard() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSounds({
-        matchStart: new Audio("/sounds/match_start.mp3"),
+        matchStart: new Audio("/sounds/match_start.wav"),
         autonomousComplete: new Audio("/sounds/autonomous_complete.mp3"),
         driverControllers: new Audio("/sounds/drivers_controllers.mp3"),
         teleopStart: new Audio("/sounds/teleop_start.mp3"),

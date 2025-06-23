@@ -43,7 +43,7 @@ export default function ScoreIndex() {
         />
         <input
           type="text"
-          placeholder="Red Team Name"
+          placeholder="Orange Team Name"
           value={redName}
           onChange={(e) => setRedName(e.target.value)}
           onBlur={updateMatchInfo}
@@ -51,14 +51,14 @@ export default function ScoreIndex() {
             margin: "0.5rem",
             padding: "0.5rem",
             backgroundColor: "#2a2a2a",
-            color: "#ff1000",
-            border: "1px solid #ff1000",
+            color: "#ff8c00",
+            border: "1px solid #ff8c00",
             borderRadius: "4px",
           }}
         />
         <input
           type="text"
-          placeholder="Blue Team Name"
+          placeholder="Pink Team Name"
           value={blueName}
           onChange={(e) => setBlueName(e.target.value)}
           onBlur={updateMatchInfo}
@@ -66,8 +66,8 @@ export default function ScoreIndex() {
             margin: "0.5rem",
             padding: "0.5rem",
             backgroundColor: "#2a2a2a",
-            color: "#0091ff",
-            border: "1px solid #0091ff",
+            color: "#ff69b4",
+            border: "1px solid #ff69b4",
             borderRadius: "4px",
           }}
         />
@@ -76,24 +76,24 @@ export default function ScoreIndex() {
           <Link
             href="/red-score"
             style={{
-              color: "#ff1000",
+              color: "#ff8c00",
               margin: "1rem",
               display: "inline-block",
               textDecoration: "underline",
             }}
           >
-            Red
+            Orange
           </Link>
           <Link
             href="/blue-score"
             style={{
-              color: "#0091ff",
+              color: "#ff69b4",
               margin: "1rem",
               display: "inline-block",
               textDecoration: "underline",
             }}
           >
-            Blue
+            Pink
           </Link>
           <Link
             href="/scoreboard"
@@ -113,7 +113,7 @@ export default function ScoreIndex() {
             variant="contained"
             style={{
               margin: "0.5rem",
-              backgroundColor: "#0091ff",
+              backgroundColor: "#0000ff",
               color: "white",
             }}
             onClick={() => {
@@ -127,8 +127,8 @@ export default function ScoreIndex() {
             variant="contained"
             style={{
               margin: "0.5rem",
-              backgroundColor: "#bf00ff",
-              color: "white",
+              backgroundColor: "#00ff00",
+              color: "black",
             }}
             onClick={async () => {
               await updateDoc(doc(db, "realtime", "timer"), {
@@ -203,7 +203,7 @@ export default function ScoreIndex() {
             variant="contained"
             style={{
               margin: "0.5rem",
-              backgroundColor: "#ff1000",
+              backgroundColor: "#ff0000",
               color: "white",
             }}
             onClick={async () => {

@@ -246,8 +246,8 @@ export default function Scoreboard() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setMatch({
-          red_name: data.red_name || "Red",
-          blue_name: data.blue_name || "Blue",
+          red_name: data.red_name || "Orange",
+          blue_name: data.blue_name || "Pink",
           match_number: data.match_number || "Match",
         });
       }
@@ -306,7 +306,7 @@ export default function Scoreboard() {
         });
 
         if (newPenalties > currentRedPenalties) {
-          setRedStatus("PENALTY GIVEN TO RED!");
+          setRedStatus("PENALTY GIVEN TO ORANGE!");
           if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
           redTimeoutRef.current = setTimeout(() => setRedStatus("⠀"), 1000);
         }
@@ -330,7 +330,7 @@ export default function Scoreboard() {
         });
 
         if (newPenalties > currentBluePenalties) {
-          setBlueStatus("PENALTY GIVEN TO BLUE!");
+          setBlueStatus("PENALTY GIVEN TO PINK!");
           if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
           blueTimeoutRef.current = setTimeout(() => setBlueStatus("⠀"), 1000);
         }
@@ -405,11 +405,11 @@ export default function Scoreboard() {
         </Typography>
 
         <Grid container spacing={4} paddingTop={4}>
-          {/* Red Side */}
+          {/* ORANGE Side */}
           <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "right" }}>
             <div
               style={{
-                backgroundColor: "#ff0000",
+                backgroundColor: "#ff8c00",
                 borderRadius: "12px",
                 padding: "2rem",
                 display: "flex",
@@ -485,17 +485,17 @@ export default function Scoreboard() {
                 <Typography
                   sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
                 >
-                  BLUE PENALTY: {bluePenalties * 5}
+                  PINK PENALTY: {bluePenalties * 5}
                 </Typography>
               </div>
             </div>
           </Grid>
 
-          {/* Blue Side */}
+          {/* PINK Side */}
           <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "left" }}>
             <div
               style={{
-                backgroundColor: "#0000ff",
+                backgroundColor: "#ff69b4",
                 borderRadius: "12px",
                 padding: "2rem",
                 display: "flex",
@@ -569,7 +569,7 @@ export default function Scoreboard() {
                 <Typography
                   sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
                 >
-                  RED PENALTY: {redPenalties * 5}
+                  ORANGE PENALTY: {redPenalties * 5}
                 </Typography>
               </div>
             </div>
@@ -608,7 +608,7 @@ export default function Scoreboard() {
         <Grid size={6}>
           <div
             style={{
-              backgroundColor: "#ff0000",
+              backgroundColor: "#ff8c00",
               padding: "2rem",
               borderRadius: "12px",
               textAlign: "center",
@@ -637,7 +637,7 @@ export default function Scoreboard() {
         <Grid size={6}>
           <div
             style={{
-              backgroundColor: "#0000ff",
+              backgroundColor: "#ff69b4",
               padding: "2rem",
               borderRadius: "12px",
               textAlign: "center",

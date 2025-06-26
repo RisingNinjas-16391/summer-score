@@ -11,6 +11,19 @@ export default function ScoreIndex() {
   const [redName, setRedName] = useState("");
   const [blueName, setBlueName] = useState("");
 
+  const teamMap: Record<string, string> = {
+    "Team 1": "The Robonadoes",
+    "Team 2": "The Final Countdown",
+    "Team 3": "Hot Dog on a AAA Battery",
+    "Team 4": "Bombardillo Baguetito",
+    "Team 5": "The Cryptoids",
+    "Team 6": "The Propaniacs",
+    "Team 7": "Princess Yoda",
+    "Team 8": "Superstars",
+  };
+
+  const teamOptions = Object.keys(teamMap);
+
   const updateMatchInfo = async () => {
     await setDoc(doc(db, "realtime", "matches"), {
       match_number: matchNumber,
@@ -41,9 +54,7 @@ export default function ScoreIndex() {
             borderRadius: "4px",
           }}
         />
-        <input
-          type="text"
-          placeholder="Orange Team Name"
+        <select
           value={redName}
           onChange={(e) => setRedName(e.target.value)}
           onBlur={updateMatchInfo}
@@ -55,10 +66,16 @@ export default function ScoreIndex() {
             border: "1px solid #ff8c00",
             borderRadius: "4px",
           }}
-        />
-        <input
-          type="text"
-          placeholder="Pink Team Name"
+        >
+          <option value="">None</option>
+          {teamOptions.map((team) => (
+            <option key={team} value={team}>
+              {team}
+            </option>
+          ))}
+        </select>
+
+        <select
           value={blueName}
           onChange={(e) => setBlueName(e.target.value)}
           onBlur={updateMatchInfo}
@@ -70,7 +87,14 @@ export default function ScoreIndex() {
             border: "1px solid #ff69b4",
             borderRadius: "4px",
           }}
-        />
+        >
+          <option value="">None</option>
+          {teamOptions.map((team) => (
+            <option key={team} value={team}>
+              {team}
+            </option>
+          ))}
+        </select>
 
         <div style={{ marginTop: "1rem" }}>
           <Link

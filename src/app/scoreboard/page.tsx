@@ -21,6 +21,17 @@ interface ScoreData {
   endgameScore?: number;
 }
 
+const teamMap: Record<string, string> = {
+  "Team 1": "The Robonadoes",
+  "Team 2": "The Final Countdown",
+  "Team 3": "Hot Dog on a AAA Battery",
+  "Team 4": "Bombardillo Baguetito",
+  "Team 5": "The Cryptoids",
+  "Team 6": "The Propaniacs",
+  "Team 7": "Princess Yoda",
+  "Team 8": "Superstars",
+};
+
 export default function Scoreboard() {
   const [match, setMatch] = useState<MatchData>({
     red_name: "Red",
@@ -194,7 +205,7 @@ export default function Scoreboard() {
     let current = timer;
     const interval = setInterval(() => {
       current--;
-      if (current === 90 && !playedTransition) {
+      if (current === 105 && !playedTransition) {
         clearInterval(interval);
         setIsInCountdown(true);
         setCountdown(8);
@@ -232,7 +243,7 @@ export default function Scoreboard() {
         if (newCount <= 0) {
           clearInterval(countdownInterval);
           setIsInCountdown(false);
-          setTimer(90);
+          setTimer(105);
         }
         return newCount;
       });
@@ -425,7 +436,7 @@ export default function Scoreboard() {
                   color: "#ffffff",
                 }}
               >
-                {match.red_name}
+                {teamMap[match.red_name] || match.red_name}
               </Typography>
 
               <div
@@ -510,7 +521,7 @@ export default function Scoreboard() {
                   color: "#ffffff",
                 }}
               >
-                {match.blue_name}
+                {teamMap[match.blue_name] || match.blue_name}
               </Typography>
 
               <div
@@ -615,7 +626,7 @@ export default function Scoreboard() {
             }}
           >
             <Typography variant="h2" sx={{ fontWeight: "bold" }}>
-              {match.red_name}
+              {teamMap[match.red_name] || match.red_name}
             </Typography>
             <Typography variant="h1" sx={{ fontWeight: "bold" }}>
               {redDisplay}
@@ -644,7 +655,7 @@ export default function Scoreboard() {
             }}
           >
             <Typography variant="h2" sx={{ fontWeight: "bold" }}>
-              {match.blue_name}
+              {teamMap[match.blue_name] || match.blue_name}
             </Typography>
             <Typography variant="h1" sx={{ fontWeight: "bold" }}>
               {blueDisplay}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
-import { Typography } from "@mui/material";
+// import { Typography } from "@mui/material";
 
 interface MatchData {
   red_name: string;

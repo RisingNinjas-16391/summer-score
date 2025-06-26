@@ -62,8 +62,8 @@ export default function ScoreIndex() {
             margin: "0.5rem",
             padding: "0.5rem",
             backgroundColor: "#2a2a2a",
-            color: "#ff8c00",
-            border: "1px solid #ff8c00",
+            color: "#ff0000",
+            border: "1px solid #ff0000",
             borderRadius: "4px",
           }}
         >
@@ -83,8 +83,8 @@ export default function ScoreIndex() {
             margin: "0.5rem",
             padding: "0.5rem",
             backgroundColor: "#2a2a2a",
-            color: "#ff69b4",
-            border: "1px solid #ff69b4",
+            color: "#0000ff",
+            border: "1px solid #0000ff",
             borderRadius: "4px",
           }}
         >
@@ -100,24 +100,24 @@ export default function ScoreIndex() {
           <Link
             href="/red-score"
             style={{
-              color: "#ff8c00",
+              color: "#ff0000",
               margin: "1rem",
               display: "inline-block",
               textDecoration: "underline",
             }}
           >
-            Orange
+            Red
           </Link>
           <Link
             href="/blue-score"
             style={{
-              color: "#ff69b4",
+              color: "#0000ff",
               margin: "1rem",
               display: "inline-block",
               textDecoration: "underline",
             }}
           >
-            Pink
+            Blue
           </Link>
           <Link
             href="/scoreboard"

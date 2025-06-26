@@ -213,7 +213,7 @@ export default function Scoreboard() {
         playTwoTransitionSounds();
         return;
       }
-      if (current === 15) sounds.endgameStart?.play();
+      if (current === 30) sounds.endgameStart?.play();
       if (current === 0) {
         clearInterval(interval);
         sounds.matchEnd?.play();
@@ -257,8 +257,8 @@ export default function Scoreboard() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setMatch({
-          red_name: data.red_name || "Orange",
-          blue_name: data.blue_name || "Pink",
+          red_name: data.red_name || "Red",
+          blue_name: data.blue_name || "Blue",
           match_number: data.match_number || "Match",
         });
       }
@@ -317,7 +317,7 @@ export default function Scoreboard() {
         });
 
         if (newPenalties > currentRedPenalties) {
-          setRedStatus("PENALTY GIVEN TO ORANGE!");
+          setRedStatus("PENALTY GIVEN TO RED!");
           if (redTimeoutRef.current) clearTimeout(redTimeoutRef.current);
           redTimeoutRef.current = setTimeout(() => setRedStatus("⠀"), 1000);
         }
@@ -341,7 +341,7 @@ export default function Scoreboard() {
         });
 
         if (newPenalties > currentBluePenalties) {
-          setBlueStatus("PENALTY GIVEN TO PINK!");
+          setBlueStatus("PENALTY GIVEN TO BLUE!");
           if (blueTimeoutRef.current) clearTimeout(blueTimeoutRef.current);
           blueTimeoutRef.current = setTimeout(() => setBlueStatus("⠀"), 1000);
         }
@@ -416,11 +416,11 @@ export default function Scoreboard() {
         </Typography>
 
         <Grid container spacing={4} paddingTop={4}>
-          {/* ORANGE Side */}
+          {/* RED Side */}
           <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "right" }}>
             <div
               style={{
-                backgroundColor: "#ff8c00",
+                backgroundColor: "#ff0000",
                 borderRadius: "12px",
                 padding: "2rem",
                 display: "flex",
@@ -470,7 +470,7 @@ export default function Scoreboard() {
 
               <div
                 style={{
-                  backgroundColor: "#2c2c2c",
+                  backgroundColor: "#ff69b4",
                   color: "#ffffff",
                   padding: "1rem 2rem",
                   borderRadius: "8px",
@@ -496,17 +496,17 @@ export default function Scoreboard() {
                 <Typography
                   sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
                 >
-                  PINK PENALTY: {bluePenalties * 5}
+                  BLUE PENALTY: {bluePenalties * 5}
                 </Typography>
               </div>
             </div>
           </Grid>
 
-          {/* PINK Side */}
+          {/* BLUE Side */}
           <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "left" }}>
             <div
               style={{
-                backgroundColor: "#ff69b4",
+                backgroundColor: "#0000ff",
                 borderRadius: "12px",
                 padding: "2rem",
                 display: "flex",
@@ -554,7 +554,7 @@ export default function Scoreboard() {
 
               <div
                 style={{
-                  backgroundColor: "#2c2c2c",
+                  backgroundColor: "#ff8c00",
                   color: "#ffffff",
                   padding: "1rem 2rem",
                   borderRadius: "8px",
@@ -580,7 +580,7 @@ export default function Scoreboard() {
                 <Typography
                   sx={{ fontWeight: "bold", fontSize: fontSizes.breakdown }}
                 >
-                  ORANGE PENALTY: {redPenalties * 5}
+                  RED PENALTY: {redPenalties * 5}
                 </Typography>
               </div>
             </div>
@@ -619,7 +619,7 @@ export default function Scoreboard() {
         <Grid size={6}>
           <div
             style={{
-              backgroundColor: "#ff8c00",
+              backgroundColor: "#ff0000",
               padding: "2rem",
               borderRadius: "12px",
               textAlign: "center",
@@ -648,7 +648,7 @@ export default function Scoreboard() {
         <Grid size={6}>
           <div
             style={{
-              backgroundColor: "#ff69b4",
+              backgroundColor: "#0000ff",
               padding: "2rem",
               borderRadius: "12px",
               textAlign: "center",

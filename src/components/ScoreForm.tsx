@@ -66,9 +66,9 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
 
   const textColor =
     teamColor === "red"
-      ? "#ff8c00"
+      ? "#ff0000"
       : teamColor === "blue"
-      ? "#ff69b4"
+      ? "#0000ff"
       : "white";
 
   const updateAndSave = (updated: ScoreData) => {

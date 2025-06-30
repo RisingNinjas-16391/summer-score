@@ -17,7 +17,7 @@ export type ScoreData = {
   teleopRows: number;
   teleopScore: number;
   climbed: boolean;
-  endgameScore: number;
+  postMatchAddedPoints: number;
   totalScore: number;
   penalties: number;
   preliminaryScore: number;

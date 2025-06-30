@@ -18,7 +18,7 @@ interface ScoreData {
   penalties?: number;
   autoScore?: number;
   teleopScore?: number;
-  endgameScore?: number;
+  postMatchAddedPoints: number;
 }
 
 const teamMap: Record<string, string> = {
@@ -205,7 +205,7 @@ export default function Scoreboard() {
     let current = timer;
     const interval = setInterval(() => {
       current--;
-      if (current === 105 && !playedTransition) {
+      if (current === 90 && !playedTransition) {
         clearInterval(interval);
         setIsInCountdown(true);
         setCountdown(8);
@@ -243,7 +243,7 @@ export default function Scoreboard() {
         if (newCount <= 0) {
           clearInterval(countdownInterval);
           setIsInCountdown(false);
-          setTimer(105);
+          setTimer(90);
         }
         return newCount;
       });
@@ -273,7 +273,7 @@ export default function Scoreboard() {
         setRedBreakdown({
           auto: data.autoScore || 0,
           teleop: data.teleopScore || 0,
-          endgame: data.endgameScore || 0,
+          endgame: data.postMatchAddedPoints || 0,
         });
       }
     });
@@ -287,7 +287,7 @@ export default function Scoreboard() {
         setBlueBreakdown({
           auto: data.autoScore || 0,
           teleop: data.teleopScore || 0,
-          endgame: data.endgameScore || 0,
+          endgame: data.postMatchAddedPoints || 0,
         });
       }
     });
@@ -313,7 +313,7 @@ export default function Scoreboard() {
         setRedBreakdown({
           auto: data.autoScore || 0,
           teleop: data.teleopScore || 0,
-          endgame: data.endgameScore || 0,
+          endgame: data.postMatchAddedPoints || 0,
         });
 
         if (newPenalties > currentRedPenalties) {
@@ -337,7 +337,7 @@ export default function Scoreboard() {
         setBlueBreakdown({
           auto: data.autoScore || 0,
           teleop: data.teleopScore || 0,
-          endgame: data.endgameScore || 0,
+          endgame: data.postMatchAddedPoints || 0,
         });
 
         if (newPenalties > currentBluePenalties) {

@@ -190,7 +190,7 @@ export default function ScoreIndex() {
                 climbed: false,
                 parked: false,
                 preliminaryScore: 0,
-                endgameScore: 0,
+                postMatchAddedPoints: 0,
                 penalties: 0,
                 totalScore: 0,
               });
@@ -209,7 +209,7 @@ export default function ScoreIndex() {
                 climbed: false,
                 parked: false,
                 preliminaryScore: 0,
-                endgameScore: 0,
+                postMatchAddedPoints: 0,
                 penalties: 0,
                 totalScore: 0,
               });

@@ -99,6 +99,7 @@ export default function ScoreIndex() {
         <div style={{ marginTop: "1rem" }}>
           <Link
             href="/red-score"
+            target="_blank"
             style={{
               color: "#ff0000",
               margin: "1rem",
@@ -110,6 +111,7 @@ export default function ScoreIndex() {
           </Link>
           <Link
             href="/blue-score"
+            target="_blank"
             style={{
               color: "#0000ff",
               margin: "1rem",
@@ -121,6 +123,7 @@ export default function ScoreIndex() {
           </Link>
           <Link
             href="/scoreboard"
+            target="_blank"
             style={{
               color: "white",
               margin: "1rem",
@@ -129,6 +132,18 @@ export default function ScoreIndex() {
             }}
           >
             Scoreboard
+          </Link>
+          <Link
+            href="/overlay"
+            target="_blank"
+            style={{
+              color: "white",
+              margin: "1rem",
+              display: "inline-block",
+              textDecoration: "underline",
+            }}
+          >
+            Overlay
           </Link>
         </div>
 

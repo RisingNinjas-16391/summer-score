@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
-// import { Typography } from "@mui/material";
 
 interface MatchData {
   red_name: string;
@@ -71,48 +70,50 @@ export default function StreamOverlay() {
     <div
       style={{
         position: "absolute",
-        bottom: 0,
+        top: 0,
         left: 0,
         right: 0,
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "1rem",
+        padding: "2rem", // doubled thickness
         backgroundColor: "rgba(0, 0, 0, 0.8)",
         color: "white",
         fontFamily: "sans-serif",
-        fontSize: "1.5rem",
+        fontSize: "2rem", // increased font size
       }}
     >
+      {/* Red team on the left now */}
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            backgroundColor: "#0091ff",
+            backgroundColor: "#ff1000",
             padding: "0.5rem 1rem",
             marginRight: "0.5rem",
             borderRadius: "4px",
             fontWeight: "bold",
           }}
         >
-          {match.blue_name}
+          {match.red_name}
         </div>
-        <div>{blueScore}</div>
+        <div>{redScore}</div>
       </div>
 
-      <div style={{ fontWeight: "bold", fontSize: "2rem" }}>{timer}</div>
+      <div style={{ fontWeight: "bold", fontSize: "2.5rem" }}>{timer}</div>
 
+      {/* Blue team on the right now */}
       <div style={{ display: "flex", alignItems: "center" }}>
-        <div>{redScore}</div>
+        <div>{blueScore}</div>
         <div
           style={{
-            backgroundColor: "#ff1000",
+            backgroundColor: "#0091ff",
             padding: "0.5rem 1rem",
             marginLeft: "0.5rem",
             borderRadius: "4px",
             fontWeight: "bold",
           }}
         >
-          {match.red_name}
+          {match.blue_name}
         </div>
       </div>
     </div>

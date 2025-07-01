@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { Typography, Grid } from "@mui/material";
+import { teamMap } from "@/lib/teamMap";
 
 interface MatchData {
   red_name: string;
@@ -20,17 +21,6 @@ interface ScoreData {
   teleopScore?: number;
   postMatchAddedPoints: number;
 }
-
-const teamMap: Record<string, string> = {
-  "Team 1": "The Robonadoes",
-  "Team 2": "The Final Countdown",
-  "Team 3": "Hot Dog on a AAA Battery",
-  "Team 4": "Bombardillo Baguetito",
-  "Team 5": "The Cryptoids",
-  "Team 6": "The Propaniacs",
-  "Team 7": "Princess Yoda",
-  "Team 8": "Superstars",
-};
 
 export default function Scoreboard() {
   const [match, setMatch] = useState<MatchData>({
@@ -187,10 +177,10 @@ export default function Scoreboard() {
 
           setAnimationSrc(
             redFinal > blueFinal
-              ? "/animations/power_play_red.webm"
+              ? "/animations/crescendo_red.mp4"
               : blueFinal > redFinal
-              ? "/animations/power_play_blue.webm"
-              : "/animations/power_play_tie.webm"
+              ? "/animations/crescendo_blue.mp4"
+              : "/animations/crescendo_tie.mp4"
           );
         }
       }

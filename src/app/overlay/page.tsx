@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
+import { teamMap } from "@/lib/teamMap";
 
 interface MatchData {
   red_name: string;
@@ -17,9 +18,20 @@ export default function StreamOverlay() {
     match_number: "Match",
   });
 
+  const [redPrelim, setRedPrelim] = useState(0);
+  const [bluePrelim, setBluePrelim] = useState(0);
+  const [redPenalties, setRedPenalties] = useState(0);
+  const [bluePenalties, setBluePenalties] = useState(0);
   const [redScore, setRedScore] = useState(0);
   const [blueScore, setBlueScore] = useState(0);
-  const [timer, setTimer] = useState("2:00");
+
+  const [timer, setTimer] = useState(120);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isInCountdown, setIsInCountdown] = useState(false);
+  const [countdown, setCountdown] = useState(8);
+  const [playedTransition, setPlayedTransition] = useState(false);
+  const [showFinalScore, setShowFinalScore] = useState(false);
 
   useEffect(() => {
     const unsubMatch = onSnapshot(doc(db, "realtime", "matches"), (docSnap) => {
@@ -37,6 +49,8 @@ export default function StreamOverlay() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setRedScore(data.totalScore || 0);
+        setRedPrelim(data.preliminaryScore || 0);
+        setRedPenalties(data.penalties || 0);
       }
     });
 
@@ -44,16 +58,36 @@ export default function StreamOverlay() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setBlueScore(data.totalScore || 0);
+        setBluePrelim(data.preliminaryScore || 0);
+        setBluePenalties(data.penalties || 0);
       }
     });
 
     const unsubTimer = onSnapshot(doc(db, "realtime", "timer"), (docSnap) => {
       if (docSnap.exists()) {
-        const timeLeft = docSnap.data().time;
-        if (typeof timeLeft === "number") {
-          const minutes = Math.floor(timeLeft / 60);
-          const seconds = (timeLeft % 60).toString().padStart(2, "0");
-          setTimer(`${minutes}:${seconds}`);
+        const data = docSnap.data();
+        if (data.start) {
+          setIsRunning(true);
+          setIsPaused(false);
+          setPlayedTransition(false);
+          setShowFinalScore(false);
+        }
+        if (data.reset) {
+          setIsRunning(false);
+          setTimer(120);
+          setIsInCountdown(false);
+          setCountdown(8);
+          setPlayedTransition(false);
+          setIsPaused(false);
+          setShowFinalScore(false);
+        }
+        if (data.paused) {
+          setIsPaused(true);
+          setIsRunning(false);
+        }
+        if (data.finished) {
+          setIsRunning(false);
+          setShowFinalScore(true);
         }
       }
     });
@@ -66,56 +100,167 @@ export default function StreamOverlay() {
     };
   }, []);
 
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "2rem", // doubled thickness
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        color: "white",
-        fontFamily: "sans-serif",
-        fontSize: "2rem", // increased font size
-      }}
-    >
-      {/* Red team on the left now */}
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div
-          style={{
-            backgroundColor: "#ff1000",
-            padding: "0.5rem 1rem",
-            marginRight: "0.5rem",
-            borderRadius: "4px",
-            fontWeight: "bold",
-          }}
-        >
-          {match.red_name}
-        </div>
-        <div>{redScore}</div>
+  // Timer logic
+  useEffect(() => {
+    if (!isRunning || isInCountdown || isPaused) return;
+
+    let current = timer;
+    const interval = setInterval(() => {
+      current--;
+      if (current === 90 && !playedTransition) {
+        clearInterval(interval);
+        setIsInCountdown(true);
+        setCountdown(8);
+        setPlayedTransition(true);
+        return;
+      }
+      if (current === 0) {
+        clearInterval(interval);
+        setIsRunning(false);
+      }
+      setTimer(current);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, isInCountdown, playedTransition, timer, isPaused]);
+
+  // Countdown logic
+  useEffect(() => {
+    if (!isInCountdown || countdown <= 0) return;
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => {
+        const newCount = prev - 1;
+        if (newCount <= 0) {
+          clearInterval(countdownInterval);
+          setIsInCountdown(false);
+          setTimer(90);
+        }
+        return newCount;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [isInCountdown, countdown]);
+
+  const redDisplay = showFinalScore ? redScore + bluePenalties * 5 : redPrelim;
+
+  const blueDisplay = showFinalScore
+    ? blueScore + redPenalties * 5
+    : bluePrelim;
+
+  const formatTime = (time: number) =>
+    `${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, "0")}`;
+
+return (
+  <div
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      height: "3.5rem",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "0 2rem",
+      backgroundColor: "#000000",
+      color: "white",
+      fontFamily: "sans-serif",
+      fontSize: "1.75rem",
+    }}
+  >
+    {/* Left Side: Red Team + Red Score */}
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <div
+        style={{
+          backgroundColor: "#ff0000",
+          padding: "0 1rem",
+          height: "3.5rem",
+          display: "flex",
+          alignItems: "center",
+          borderTopLeftRadius: "4px",
+          borderBottomLeftRadius: "4px",
+          fontWeight: "bold",
+          fontSize: "1.5rem",
+        }}
+      >
+        {teamMap[match.red_name] || match.red_name}
       </div>
 
-      <div style={{ fontWeight: "bold", fontSize: "2.5rem" }}>{timer}</div>
-
-      {/* Blue team on the right now */}
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div>{blueScore}</div>
-        <div
-          style={{
-            backgroundColor: "#0091ff",
-            padding: "0.5rem 1rem",
-            marginLeft: "0.5rem",
-            borderRadius: "4px",
-            fontWeight: "bold",
-          }}
-        >
-          {match.blue_name}
-        </div>
+      <div
+        style={{
+          backgroundColor: "#2a2a2a",
+          padding: "0 1.5rem",
+          height: "3.5rem",
+          display: "flex",
+          alignItems: "center",
+          marginRight: "1rem",
+          borderTopRightRadius: "4px",
+          borderBottomRightRadius: "4px",
+          fontWeight: "900",
+          fontSize: "3.5rem",
+        }}
+      >
+        {redDisplay}
       </div>
     </div>
-  );
+
+    {/* Center: Timer */}
+    <div
+      style={{
+        backgroundColor: "#222222",
+        padding: "0 1.5rem",
+        height: "3.5rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "4px",
+        fontWeight: "bold",
+        fontSize: "2rem",
+        minWidth: "6rem",
+      }}
+    >
+      {isInCountdown
+        ? `0:${countdown.toString().padStart(2, "0")}`
+        : formatTime(timer)}
+    </div>
+
+    {/* Right Side: Blue Score + Blue Team */}
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <div
+        style={{
+          backgroundColor: "#2a2a2a",
+          padding: "0 1.5rem",
+          height: "3.5rem",
+          display: "flex",
+          alignItems: "center",
+          borderTopLeftRadius: "4px",
+          borderBottomLeftRadius: "4px",
+          fontWeight: "900",
+          fontSize: "3.5rem",
+        }}
+      >
+        {blueDisplay}
+      </div>
+
+      <div
+        style={{
+          backgroundColor: "#0000ff",
+          padding: "0 1rem",
+          height: "3.5rem",
+          display: "flex",
+          alignItems: "center",
+          borderTopRightRadius: "4px",
+          borderBottomRightRadius: "4px",
+          fontWeight: "bold",
+          fontSize: "1.5rem",
+        }}
+      >
+        {teamMap[match.blue_name] || match.blue_name}
+      </div>
+    </div>
+  </div>
+);
+
 }

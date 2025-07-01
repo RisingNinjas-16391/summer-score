@@ -5,22 +5,12 @@ import Link from "next/link";
 import Button from "@mui/material/Button";
 import { db } from "@/lib/firebase";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { teamMap } from "@/lib/teamMap";
 
 export default function ScoreIndex() {
   const [matchNumber, setMatchNumber] = useState("");
   const [redName, setRedName] = useState("");
   const [blueName, setBlueName] = useState("");
-
-  const teamMap: Record<string, string> = {
-    "Team 1": "The Robonadoes",
-    "Team 2": "The Final Countdown",
-    "Team 3": "Hot Dog on a AAA Battery",
-    "Team 4": "Bombardillo Baguetito",
-    "Team 5": "The Cryptoids",
-    "Team 6": "The Propaniacs",
-    "Team 7": "Princess Yoda",
-    "Team 8": "Superstars",
-  };
 
   const teamOptions = Object.keys(teamMap);
 

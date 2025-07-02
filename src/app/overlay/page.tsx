@@ -159,15 +159,15 @@ return (
       top: 0,
       left: 0,
       right: 0,
-      height: "3.5rem",
+      width: "1920px",
+      height: "250px",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: "0 2rem",
+      padding: "0 3rem",
       backgroundColor: "#000000",
       color: "white",
       fontFamily: "sans-serif",
-      fontSize: "1.75rem",
     }}
   >
     {/* Left Side: Red Team + Red Score */}
@@ -175,14 +175,14 @@ return (
       <div
         style={{
           backgroundColor: "#ff0000",
-          padding: "0 1rem",
-          height: "3.5rem",
+          padding: "0 2.5rem",
+          height: "250px",
           display: "flex",
           alignItems: "center",
-          borderTopLeftRadius: "4px",
-          borderBottomLeftRadius: "4px",
+          borderTopLeftRadius: "12px",
+          borderBottomLeftRadius: "12px",
           fontWeight: "bold",
-          fontSize: "1.5rem",
+          fontSize: "3rem",
         }}
       >
         {teamMap[match.red_name] || match.red_name}
@@ -191,15 +191,15 @@ return (
       <div
         style={{
           backgroundColor: "#2a2a2a",
-          padding: "0 1.5rem",
-          height: "3.5rem",
+          padding: "0 4rem",
+          height: "250px",
           display: "flex",
           alignItems: "center",
-          marginRight: "1rem",
-          borderTopRightRadius: "4px",
-          borderBottomRightRadius: "4px",
+          marginRight: "2.5rem",
+          borderTopRightRadius: "12px",
+          borderBottomRightRadius: "12px",
           fontWeight: "900",
-          fontSize: "3.5rem",
+          fontSize: "8rem",
         }}
       >
         {redDisplay}
@@ -209,16 +209,16 @@ return (
     {/* Center: Timer */}
     <div
       style={{
-        backgroundColor: "#222222",
-        padding: "0 1.5rem",
-        height: "3.5rem",
+        backgroundColor: "#000000",
+        padding: "0 4rem",
+        height: "250px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        borderRadius: "4px",
+        borderRadius: "12px",
         fontWeight: "bold",
-        fontSize: "2rem",
-        minWidth: "6rem",
+        fontSize: "6rem",
+        minWidth: "12rem",
       }}
     >
       {isInCountdown
@@ -231,14 +231,14 @@ return (
       <div
         style={{
           backgroundColor: "#2a2a2a",
-          padding: "0 1.5rem",
-          height: "3.5rem",
+          padding: "0 4rem",
+          height: "250px",
           display: "flex",
           alignItems: "center",
-          borderTopLeftRadius: "4px",
-          borderBottomLeftRadius: "4px",
+          borderTopLeftRadius: "12px",
+          borderBottomLeftRadius: "12px",
           fontWeight: "900",
-          fontSize: "3.5rem",
+          fontSize: "8rem",
         }}
       >
         {blueDisplay}
@@ -247,14 +247,14 @@ return (
       <div
         style={{
           backgroundColor: "#0000ff",
-          padding: "0 1rem",
-          height: "3.5rem",
+          padding: "0 2.5rem",
+          height: "250px",
           display: "flex",
           alignItems: "center",
-          borderTopRightRadius: "4px",
-          borderBottomRightRadius: "4px",
+          borderTopRightRadius: "12px",
+          borderBottomRightRadius: "12px",
           fontWeight: "bold",
-          fontSize: "1.5rem",
+          fontSize: "3rem",
         }}
       >
         {teamMap[match.blue_name] || match.blue_name}

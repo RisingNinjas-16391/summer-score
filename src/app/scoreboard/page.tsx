@@ -89,7 +89,7 @@ export default function Scoreboard() {
   const [sounds, setSounds] = useState({
     matchStart: undefined as HTMLAudioElement | undefined,
     autonomousComplete: undefined as HTMLAudioElement | undefined,
-    driverControllers: undefined as HTMLAudioElement | undefined,
+    teleopCountdown: undefined as HTMLAudioElement | undefined,
     teleopStart: undefined as HTMLAudioElement | undefined,
     endgameStart: undefined as HTMLAudioElement | undefined,
     matchEnd: undefined as HTMLAudioElement | undefined,
@@ -100,35 +100,17 @@ export default function Scoreboard() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSounds({
-        matchStart: new Audio("/sounds/match_start.wav"),
-        autonomousComplete: new Audio("/sounds/autonomous_complete.mp3"),
-        driverControllers: new Audio("/sounds/drivers_controllers.mp3"),
-        teleopStart: new Audio("/sounds/teleop_start.mp3"),
-        endgameStart: new Audio("/sounds/endgame_start.mp3"),
-        matchEnd: new Audio("/sounds/match_end.mp3"),
+        matchStart: new Audio("/sounds/charge.wav"),
+        autonomousComplete: new Audio("/sounds/endauto_with_warning.wav"),
+        teleopCountdown: new Audio("/sounds/3-2-1.wav"),
+        teleopStart: new Audio("/sounds/firebell.wav"),
+        endgameStart: new Audio("/sounds/factwhistle.wav"),
+        matchEnd: new Audio("/sounds/endmatch.wav"),
         results: new Audio("/sounds/results.wav"),
-        aborted: new Audio("/sounds/abort_match.mp3"),
+        aborted: new Audio("/sounds/fogblast.wav"),
       });
     }
   }, []);
-
-  const playTwoTransitionSounds = useCallback(async () => {
-    const { autonomousComplete, driverControllers } = sounds;
-    if (!autonomousComplete || !driverControllers) return;
-
-    autonomousComplete.currentTime = 0;
-    driverControllers.currentTime = 0;
-
-    await autonomousComplete.play();
-    await new Promise<void>((resolve) => {
-      autonomousComplete.onended = () => resolve();
-    });
-
-    await driverControllers.play();
-    await new Promise<void>((resolve) => {
-      driverControllers.onended = () => resolve();
-    });
-  }, [sounds]);
 
   useEffect(() => {
     const unsubTimer = onSnapshot(
@@ -160,6 +142,9 @@ export default function Scoreboard() {
           await updateDoc(doc(db, "realtime", "timer"), {
             reset: false,
             finished: false,
+          });
+          await updateDoc(doc(db, "realtime", "overlay"), {
+            revealFinalScores: false,
           });
         }
         if (data?.paused) {
@@ -200,7 +185,7 @@ export default function Scoreboard() {
         setIsInCountdown(true);
         setCountdown(8);
         setPlayedTransition(true);
-        playTwoTransitionSounds();
+        sounds.autonomousComplete?.play();
         return;
       }
       if (current === 30) sounds.endgameStart?.play();
@@ -213,15 +198,7 @@ export default function Scoreboard() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [
-    isRunning,
-    isInCountdown,
-    playedTransition,
-    timer,
-    isPaused,
-    sounds,
-    playTwoTransitionSounds,
-  ]);
+  }, [isRunning, isInCountdown, playedTransition, timer, isPaused, sounds]);
 
   useEffect(() => {
     if (!isInCountdown || countdown <= 0) return;
@@ -229,11 +206,12 @@ export default function Scoreboard() {
     const countdownInterval = setInterval(() => {
       setCountdown((prev) => {
         const newCount = prev - 1;
-        if (newCount === 3) sounds.teleopStart?.play();
+        if (newCount === 3) sounds.teleopCountdown?.play();
         if (newCount <= 0) {
           clearInterval(countdownInterval);
           setIsInCountdown(false);
           setTimer(90);
+          sounds.teleopStart?.play();
         }
         return newCount;
       });
@@ -460,7 +438,7 @@ export default function Scoreboard() {
 
               <div
                 style={{
-                  backgroundColor: "#ff69b4",
+                  backgroundColor: "#ff8c00",
                   color: "#ffffff",
                   padding: "1rem 2rem",
                   borderRadius: "8px",
@@ -544,7 +522,7 @@ export default function Scoreboard() {
 
               <div
                 style={{
-                  backgroundColor: "#ff8c00",
+                  backgroundColor: "#ff69b4",
                   color: "#ffffff",
                   padding: "1rem 2rem",
                   borderRadius: "8px",
@@ -694,14 +672,12 @@ export default function Scoreboard() {
           <video
             src={animationSrc}
             autoPlay
-            onEnded={() => {
+            onEnded={async () => {
               setShowAnimation(false);
               setShowResultsScreen(true);
-            }}
-            onError={() => {
-              console.error("Animation video failed to load");
-              setShowAnimation(false);
-              setShowResultsScreen(true);
+              await updateDoc(doc(db, "realtime", "overlay"), {
+                revealFinalScores: true,
+              });
             }}
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />

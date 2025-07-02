@@ -1,0 +1,22 @@
+[33m6692b3c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/connect-four[m[33m, [m[1;32mconnect-four[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33m6692b3c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/connect-four[m[33m, [m[1;32mconnect-four[m[33m)[m HEAD@{1}: checkout: moving from connect-four to main
+[33m6692b3c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/connect-four[m[33m, [m[1;32mconnect-four[m[33m)[m HEAD@{2}: checkout: moving from main to connect-four
+[33m6692b3c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/connect-four[m[33m, [m[1;32mconnect-four[m[33m)[m HEAD@{3}: pull origin connect-four: Fast-forward
+[33m9cbcaf9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{4}: pull origin main: Fast-forward
+[33mf110063[m HEAD@{5}: reset: moving to HEAD
+[33mf110063[m HEAD@{6}: commit: tuned down match_start sound effect
+[33mee212b1[m HEAD@{7}: commit: formatting
+[33m92082cc[m HEAD@{8}: commit: made some text bold
+[33mc5d5827[m HEAD@{9}: pull origin main: Fast-forward
+[33mbfcb8fa[m HEAD@{10}: reset: moving to HEAD
+[33mbfcb8fa[m HEAD@{11}: commit: updated results layout and added penalty indicator
+[33ma60b279[m HEAD@{12}: pull origin main: Fast-forward
+[33mfcac9e7[m HEAD@{13}: reset: moving to head
+[33mfcac9e7[m HEAD@{14}: commit: added win animations and penalties
+[33md947af2[m HEAD@{15}: reset: moving to head
+[33md947af2[m HEAD@{16}: reset: moving to head
+[33md947af2[m HEAD@{17}: reset: moving to head
+[33md947af2[m HEAD@{18}: reset: moving to HEAD
+[33md947af2[m HEAD@{19}: pull origin main: Fast-forward
+[33ma2a32cf[m HEAD@{20}: commit: added scoring, timer, and basic match control
+[33mf1a9dca[m HEAD@{21}: clone: from https://github.com/RisingNinjas-16391/summer-score.git

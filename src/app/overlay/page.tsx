@@ -33,6 +33,8 @@ export default function StreamOverlay() {
   const [playedTransition, setPlayedTransition] = useState(false);
   const [showFinalScore, setShowFinalScore] = useState(false);
 
+  const [revealFinalScores, setRevealFinalScores] = useState(false);
+
   useEffect(() => {
     const unsubMatch = onSnapshot(doc(db, "realtime", "matches"), (docSnap) => {
       if (docSnap.exists()) {
@@ -143,124 +145,140 @@ export default function StreamOverlay() {
     return () => clearInterval(countdownInterval);
   }, [isInCountdown, countdown]);
 
-  const redDisplay = showFinalScore ? redScore + bluePenalties * 5 : redPrelim;
+  // Reveal final scores logic
+  useEffect(() => {
+    const unsubReveal = onSnapshot(
+      doc(db, "realtime", "overlay"),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setRevealFinalScores(data.revealFinalScores || false);
+        }
+      }
+    );
 
-  const blueDisplay = showFinalScore
+    return () => unsubReveal();
+  }, []);
+
+  const redDisplay = showFinalScore && revealFinalScores
+   ? redScore + bluePenalties * 5 
+   : redPrelim;
+
+  const blueDisplay = showFinalScore && revealFinalScores
     ? blueScore + redPenalties * 5
     : bluePrelim;
 
   const formatTime = (time: number) =>
     `${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, "0")}`;
 
-return (
-  <div
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      width: "1920px",
-      height: "250px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "0 3rem",
-      backgroundColor: "#000000",
-      color: "white",
-      fontFamily: "sans-serif",
-    }}
-  >
-    {/* Left Side: Red Team + Red Score */}
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <div
-        style={{
-          backgroundColor: "#ff0000",
-          padding: "0 2.5rem",
-          height: "250px",
-          display: "flex",
-          alignItems: "center",
-          borderTopLeftRadius: "12px",
-          borderBottomLeftRadius: "12px",
-          fontWeight: "bold",
-          fontSize: "3rem",
-        }}
-      >
-        {teamMap[match.red_name] || match.red_name}
-      </div>
-
-      <div
-        style={{
-          backgroundColor: "#2a2a2a",
-          padding: "0 4rem",
-          height: "250px",
-          display: "flex",
-          alignItems: "center",
-          marginRight: "2.5rem",
-          borderTopRightRadius: "12px",
-          borderBottomRightRadius: "12px",
-          fontWeight: "900",
-          fontSize: "8rem",
-        }}
-      >
-        {redDisplay}
-      </div>
-    </div>
-
-    {/* Center: Timer */}
+  return (
     <div
       style={{
-        backgroundColor: "#000000",
-        padding: "0 4rem",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        width: "1920px",
         height: "250px",
         display: "flex",
+        justifyContent: "space-between",
         alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "12px",
-        fontWeight: "bold",
-        fontSize: "6rem",
-        minWidth: "12rem",
+        padding: "0 3rem",
+        backgroundColor: "#000000",
+        color: "white",
+        fontFamily: "sans-serif",
       }}
     >
-      {isInCountdown
-        ? `0:${countdown.toString().padStart(2, "0")}`
-        : formatTime(timer)}
-    </div>
+      {/* Left Side: Red Team + Red Score */}
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            backgroundColor: "#ff0000",
+            padding: "0 2.5rem",
+            height: "250px",
+            display: "flex",
+            alignItems: "center",
+            borderTopLeftRadius: "12px",
+            borderBottomLeftRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "3rem",
+          }}
+        >
+          {teamMap[match.red_name] || match.red_name}
+        </div>
 
-    {/* Right Side: Blue Score + Blue Team */}
-    <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            backgroundColor: "#ff8c00",
+            padding: "0 4rem",
+            height: "250px",
+            display: "flex",
+            alignItems: "center",
+            marginRight: "2.5rem",
+            borderTopRightRadius: "12px",
+            borderBottomRightRadius: "12px",
+            fontWeight: "900",
+            fontSize: "8rem",
+          }}
+        >
+          {redDisplay}
+        </div>
+      </div>
+
+      {/* Center: Timer */}
       <div
         style={{
-          backgroundColor: "#2a2a2a",
+          backgroundColor: "#000000",
           padding: "0 4rem",
           height: "250px",
           display: "flex",
           alignItems: "center",
-          borderTopLeftRadius: "12px",
-          borderBottomLeftRadius: "12px",
-          fontWeight: "900",
-          fontSize: "8rem",
+          justifyContent: "center",
+          borderRadius: "12px",
+          fontWeight: "bold",
+          fontSize: "6rem",
+          minWidth: "12rem",
         }}
       >
-        {blueDisplay}
+        {isInCountdown
+          ? `0:${countdown.toString().padStart(2, "0")}`
+          : formatTime(timer)}
       </div>
 
-      <div
-        style={{
-          backgroundColor: "#0000ff",
-          padding: "0 2.5rem",
-          height: "250px",
-          display: "flex",
-          alignItems: "center",
-          borderTopRightRadius: "12px",
-          borderBottomRightRadius: "12px",
-          fontWeight: "bold",
-          fontSize: "3rem",
-        }}
-      >
-        {teamMap[match.blue_name] || match.blue_name}
+      {/* Right Side: Blue Score + Blue Team */}
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            backgroundColor: "#ff69b4",
+            padding: "0 4rem",
+            height: "250px",
+            display: "flex",
+            alignItems: "center",
+            borderTopLeftRadius: "12px",
+            borderBottomLeftRadius: "12px",
+            fontWeight: "900",
+            fontSize: "8rem",
+          }}
+        >
+          {blueDisplay}
+        </div>
+
+        <div
+          style={{
+            backgroundColor: "#0000ff",
+            padding: "0 2.5rem",
+            height: "250px",
+            display: "flex",
+            alignItems: "center",
+            borderTopRightRadius: "12px",
+            borderBottomRightRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "3rem",
+          }}
+        >
+          {teamMap[match.blue_name] || match.blue_name}
+        </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 }

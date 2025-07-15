@@ -95,6 +95,7 @@ export default function Scoreboard() {
     matchEnd: undefined as HTMLAudioElement | undefined,
     results: undefined as HTMLAudioElement | undefined,
     aborted: undefined as HTMLAudioElement | undefined,
+    throwRing: undefined as HTMLAudioElement | undefined,
   });
 
   useEffect(() => {
@@ -108,6 +109,7 @@ export default function Scoreboard() {
         matchEnd: new Audio("/sounds/endmatch.wav"),
         results: new Audio("/sounds/results.wav"),
         aborted: new Audio("/sounds/fogblast.wav"),
+        throwRing: new Audio("/sounds/warning_sonar.wav"),
       });
     }
   }, []);
@@ -189,6 +191,7 @@ export default function Scoreboard() {
         return;
       }
       if (current === 40) sounds.endgameStart?.play();
+      if (current === 15) sounds.throwRing?.play();
       if (current === 0) {
         clearInterval(interval);
         sounds.matchEnd?.play();
@@ -420,12 +423,18 @@ export default function Scoreboard() {
                 }}
               >
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(2rem, 6vw, 5rem)"}}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(2rem, 6vw, 5rem)",
+                  }}
                 >
                   {redDisplay}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(1.25rem, 4vw, 3rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(1.25rem, 4vw, 3rem)",
+                  }}
                 >
                   {isRedWinner ? "WIN" : "⠀"}
                 </Typography>
@@ -442,22 +451,34 @@ export default function Scoreboard() {
                 }}
               >
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   AUTONOMOUS: {redBreakdown.auto}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   DRIVER-CONTROL: {redBreakdown.teleop}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   END GAME: {redBreakdown.endgame}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   BLUE PENALTY: {bluePenalties * 5}
                 </Typography>
@@ -504,12 +525,18 @@ export default function Scoreboard() {
                 }}
               >
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(2rem, 6vw, 5rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(2rem, 6vw, 5rem)",
+                  }}
                 >
                   {blueDisplay}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(1.25rem, 4vw, 3rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(1.25rem, 4vw, 3rem)",
+                  }}
                 >
                   {isBlueWinner ? "WIN" : "⠀"}
                 </Typography>
@@ -526,22 +553,34 @@ export default function Scoreboard() {
                 }}
               >
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   AUTONOMOUS: {blueBreakdown.auto}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   DRIVER-CONTROL: {blueBreakdown.teleop}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   END GAME: {blueBreakdown.endgame}
                 </Typography>
                 <Typography
-                  sx={{ fontWeight: "bold", fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "clamp(0.75rem, 1.8vw, 1.25rem)",
+                  }}
                 >
                   RED PENALTY: {redPenalties * 5}
                 </Typography>

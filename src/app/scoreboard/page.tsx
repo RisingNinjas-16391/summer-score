@@ -162,10 +162,10 @@ export default function Scoreboard() {
 
           setAnimationSrc(
             redFinal > blueFinal
-              ? "/animations/crescendo_red.mp4"
+              ? "/animations/into_the_deep_red.webm"
               : blueFinal > redFinal
-              ? "/animations/crescendo_blue.mp4"
-              : "/animations/crescendo_tie.mp4"
+              ? "/animations/into_the_deep_blue.webm"
+              : "/animations/into_the_deep_tie.webm"
           );
         }
       }
@@ -188,7 +188,7 @@ export default function Scoreboard() {
         sounds.autonomousComplete?.play();
         return;
       }
-      if (current === 30) sounds.endgameStart?.play();
+      if (current === 40) sounds.endgameStart?.play();
       if (current === 0) {
         clearInterval(interval);
         sounds.matchEnd?.play();
@@ -365,7 +365,7 @@ export default function Scoreboard() {
           color: "#ffffff",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          justifyContent: "flex-start",
           padding: "0.5rem",
         }}
       >
@@ -380,7 +380,7 @@ export default function Scoreboard() {
           {match.match_number} — Results
         </Typography>
 
-        <Grid container spacing={2} paddingTop={2}>
+        <Grid container spacing={2} paddingTop={20}>
           {/* RED Side */}
           <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "right" }}>
             <div
@@ -433,7 +433,7 @@ export default function Scoreboard() {
 
               <div
                 style={{
-                  backgroundColor: "#ff8c00",
+                  backgroundColor: "#2c2c2c",
                   color: "#ffffff",
                   padding: "1rem",
                   borderRadius: "8px",
@@ -517,7 +517,7 @@ export default function Scoreboard() {
 
               <div
                 style={{
-                  backgroundColor: "#ff69b4",
+                  backgroundColor: "#2c2c2c",
                   color: "#ffffff",
                   padding: "1rem",
                   borderRadius: "8px",

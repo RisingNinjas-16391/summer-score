@@ -183,39 +183,11 @@ export default function ScoreIndex() {
 
               await setDoc(doc(db, "realtime", "red"), {
                 teamColor: "red",
-                autoPeg: 0,
-                autoUpright: 0,
-                autoKnocked: 0,
-                autoScore: 0,
-                teleopPeg: 0,
-                teleopUpright: 0,
-                teleopKnocked: 0,
-                teleopRows: 0,
-                teleopScore: 0,
-                climbed: false,
-                parked: false,
-                preliminaryScore: 0,
-                postMatchAddedPoints: 0,
-                penalties: 0,
                 totalScore: 0,
               });
 
               await setDoc(doc(db, "realtime", "blue"), {
                 teamColor: "blue",
-                autoPeg: 0,
-                autoUpright: 0,
-                autoKnocked: 0,
-                autoScore: 0,
-                teleopPeg: 0,
-                teleopUpright: 0,
-                teleopKnocked: 0,
-                teleopRows: 0,
-                teleopScore: 0,
-                climbed: false,
-                parked: false,
-                preliminaryScore: 0,
-                postMatchAddedPoints: 0,
-                penalties: 0,
                 totalScore: 0,
               });
 

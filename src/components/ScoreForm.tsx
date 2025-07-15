@@ -10,16 +10,18 @@ export type CapOptions = "blue" | "red" | "";
 
 export type ScoreData = {
   teamColor: CapOptions;
-  autoBall: number;
+  sample: number;
   parked: boolean;
   autoScore: number;
-  teleopBall: number;
-  teleopPlayerBalls: number;
-  teleopLinks: number;
+  teleopLowBar: number;
+  teleopHighBar: number;
+  teleopProcessing: number;
   teleopScore: number;
+  yellowLowBar: boolean;
+  yellowHighBar: boolean;
   climbed: boolean;
-  endgameBallFirst: boolean;
-  endgameBallSecond: boolean;
+  ring: boolean;
+  endgameOwnedBars: number;
   postMatchAddedPoints: number;
   totalScore: number;
   penalties: number;
@@ -33,16 +35,18 @@ interface ScoreFormProps {
 function ScoreForm({ teamColor }: ScoreFormProps) {
   const [score, setScore] = useState<ScoreData>({
     teamColor: teamColor as CapOptions,
-    autoBall: 0,
+    sample: 0,
     parked: false,
     autoScore: 0,
-    teleopBall: 0,
-    teleopPlayerBalls: 0,
-    teleopLinks: 0,
+    teleopLowBar: 0,
+    teleopHighBar: 0,
+    teleopProcessing: 0,
     teleopScore: 0,
+    yellowLowBar: false,
+    yellowHighBar: false,
     climbed: false,
-    endgameBallFirst: false,
-    endgameBallSecond: false,
+    ring: false,
+    endgameOwnedBars: 0,
     preliminaryScore: 0,
     postMatchAddedPoints: 0,
     penalties: 0,
@@ -70,17 +74,19 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
       : "white";
 
   const updateAndSave = (updated: ScoreData) => {
-    const autoScore = updated.autoBall * 5 + (updated.parked ? 10 : 0);
+    const autoScore = updated.sample * 10 + (updated.parked ? 5 : 0);
 
     const teleopScore =
-      updated.teleopBall * 5 +
-      updated.teleopPlayerBalls +
-      (updated.endgameBallFirst ? 20 : 0) +
-      (updated.endgameBallSecond ? 10 : 0) + 
-      (updated.climbed ? 10 : 0);
+      updated.teleopLowBar * 5 +
+      updated.teleopHighBar * 7 +
+      updated.teleopProcessing * 5 +
+      (updated.yellowLowBar ? 10 : 0) +
+      (updated.yellowHighBar ? 14 : 0);
 
     const postMatchAddedPoints =
-      updated.teleopLinks * 5;
+      updated.endgameOwnedBars * 15 +
+      (updated.climbed ? 10 : 0) +
+      (updated.ring ? 10 : 0);
 
     const preliminary = autoScore + teleopScore;
     const total = preliminary + postMatchAddedPoints;
@@ -172,7 +178,7 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           >
             Auto
           </Typography>
-          {renderCounter("Ball", "autoBall")}
+          {renderCounter("Samples", "sample")}
           <FormControlLabel
             control={
               <Checkbox
@@ -197,51 +203,50 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           >
             Driver-Control
           </Typography>
-          {renderCounter("Robot-scored Balls", "teleopBall")}
-          {renderCounter("Human-scored Balls", "teleopPlayerBalls")}
+          {renderCounter("Low Bar Specimens", "teleopLowBar")}
+          {renderCounter("High Bar Specimens", "teleopHighBar")}
+          {renderCounter("Samples Processed", "teleopProcessing")}
           <FormControlLabel
             control={
               <Checkbox
-                checked={score.endgameBallFirst}
+                checked={score.yellowLowBar}
                 onChange={(e) =>
-                  updateAndSave({
-                    ...score,
-                    endgameBallFirst: e.target.checked,
-                  })
+                  updateAndSave({ ...score, yellowLowBar: e.target.checked })
                 }
                 sx={{ color: textColor }}
               />
             }
             label={
-              <Typography style={{ color: textColor }}>
-                Endgame Ball Scored First?
-              </Typography>
+              <Typography style={{ color: textColor }}>Yellow Specimen on Low Bar?</Typography>
             }
             sx={{ mt: 2 }}
           />
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={score.endgameBallSecond}
-                onChange={(e) =>
-                  updateAndSave({
-                    ...score,
-                    endgameBallSecond: e.target.checked,
-                  })
-                }
-                sx={{ color: textColor }}
-              />
-            }
-            label={
-              <Typography style={{ color: textColor }}>
-                Endgame Ball Scored Second?
-              </Typography>
-            }
-            sx={{ mt: 2 }}
-          />
-
                     <FormControlLabel
+            control={
+              <Checkbox
+                checked={score.yellowHighBar}
+                onChange={(e) =>
+                  updateAndSave({ ...score, yellowHighBar: e.target.checked })
+                }
+                sx={{ color: textColor }}
+              />
+            }
+            label={
+              <Typography style={{ color: textColor }}>Yellow Specimen on High Bar?</Typography>
+            }
+            sx={{ mt: 2 }}
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <Typography
+            variant="h5"
+            style={{ color: textColor, marginBottom: "1rem" }}
+          >
+            Post-Match
+          </Typography>
+          {renderCounter("Bars Owned", "endgameOwnedBars")}
+          <FormControlLabel
             control={
               <Checkbox
                 checked={score.climbed}
@@ -256,16 +261,22 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
             }
             sx={{ mt: 2 }}
           />
-        </Grid>
 
-        <Grid size={{ xs: 12, sm: 3 }}>
-          <Typography
-            variant="h5"
-            style={{ color: textColor, marginBottom: "1rem" }}
-          >
-            Post-Match
-          </Typography>
-          {renderCounter("Links Created", "teleopLinks")}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={score.ring}
+                onChange={(e) =>
+                  updateAndSave({ ...score, ring: e.target.checked })
+                }
+                sx={{ color: textColor }}
+              />
+            }
+            label={
+              <Typography style={{ color: textColor }}>Ring Scored?</Typography>
+            }
+            sx={{ mt: 2 }}
+          />
         </Grid>
 
         <Grid size={{ xs: 12, sm: 3 }}>

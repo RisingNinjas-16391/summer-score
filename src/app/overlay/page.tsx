@@ -209,7 +209,7 @@ export default function StreamOverlay() {
 
         <div
           style={{
-            backgroundColor: "#ff8c00",
+            backgroundColor: "#2c2c2c",
             padding: "0 4rem",
             height: "250px",
             display: "flex",
@@ -249,7 +249,7 @@ export default function StreamOverlay() {
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            backgroundColor: "#ff69b4",
+            backgroundColor: "#2c2c2c",
             padding: "0 4rem",
             height: "250px",
             display: "flex",

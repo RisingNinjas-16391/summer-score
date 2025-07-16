@@ -95,7 +95,7 @@ export default function Scoreboard() {
     matchEnd: undefined as HTMLAudioElement | undefined,
     results: undefined as HTMLAudioElement | undefined,
     aborted: undefined as HTMLAudioElement | undefined,
-    throwRing: undefined as HTMLAudioElement | undefined,
+    sonar: undefined as HTMLAudioElement | undefined,
   });
 
   useEffect(() => {
@@ -109,7 +109,7 @@ export default function Scoreboard() {
         matchEnd: new Audio("/sounds/endmatch.wav"),
         results: new Audio("/sounds/results.wav"),
         aborted: new Audio("/sounds/fogblast.wav"),
-        throwRing: new Audio("/sounds/warning_sonar.wav"),
+        sonar: new Audio("/sounds/warning_sonar.wav"),
       });
     }
   }, []);
@@ -190,8 +190,8 @@ export default function Scoreboard() {
         sounds.autonomousComplete?.play();
         return;
       }
-      if (current === 40) sounds.endgameStart?.play();
-      if (current === 15) sounds.throwRing?.play();
+      if (current === 60) sounds.sonar?.play();
+      if (current === 15) sounds.endgameStart?.play();
       if (current === 0) {
         clearInterval(interval);
         sounds.matchEnd?.play();
@@ -387,7 +387,10 @@ export default function Scoreboard() {
 
         <Grid container spacing={2} style={{ paddingTop: "5rem" }}>
           {/* RED Side */}
-          <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "right", height: "100%" }}>
+          <Grid
+            size={{ xs: 12, sm: 6 }}
+            style={{ textAlign: "right", height: "100%" }}
+          >
             <div
               style={{
                 backgroundColor: "#ff0000",
@@ -396,7 +399,7 @@ export default function Scoreboard() {
                 padding: "2rem",
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "flex-end",
+                alignItems: "center",
               }}
             >
               <Typography
@@ -404,6 +407,7 @@ export default function Scoreboard() {
                   fontWeight: "bold",
                   fontSize: "4rem",
                   color: "#ffffff",
+                  textAlign: "center",
                 }}
               >
                 {teamMap[match.red_name] || match.red_name}
@@ -450,7 +454,7 @@ export default function Scoreboard() {
                   padding: "1.5rem",
                   borderRadius: "8px",
                   width: "450px",
-                  textAlign: "right",
+                  textAlign: "center",
                 }}
               >
                 <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
@@ -470,7 +474,10 @@ export default function Scoreboard() {
           </Grid>
 
           {/* BLUE Side */}
-          <Grid size={{ xs: 12, sm: 6 }} style={{ textAlign: "left", height: "100%" }}>
+          <Grid
+            size={{ xs: 12, sm: 6 }}
+            style={{ textAlign: "left", height: "100%" }}
+          >
             <div
               style={{
                 backgroundColor: "#0000ff",
@@ -479,7 +486,7 @@ export default function Scoreboard() {
                 padding: "2rem",
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "flex-start",
+                alignItems: "center",
               }}
             >
               <Typography
@@ -487,6 +494,7 @@ export default function Scoreboard() {
                   fontWeight: "bold",
                   fontSize: "4rem",
                   color: "#ffffff",
+                  textAlign: "center",
                 }}
               >
                 {teamMap[match.blue_name] || match.blue_name}
@@ -533,7 +541,7 @@ export default function Scoreboard() {
                   padding: "1.5rem",
                   borderRadius: "8px",
                   width: "450px",
-                  textAlign: "left",
+                  textAlign: "center",
                 }}
               >
                 <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>

@@ -25,7 +25,7 @@ export default function StreamOverlay() {
   const [redScore, setRedScore] = useState(0);
   const [blueScore, setBlueScore] = useState(0);
 
-  const [timer, setTimer] = useState(120);
+  const [timer, setTimer] = useState(150);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isInCountdown, setIsInCountdown] = useState(false);
@@ -76,7 +76,7 @@ export default function StreamOverlay() {
         }
         if (data.reset) {
           setIsRunning(false);
-          setTimer(120);
+          setTimer(150);
           setIsInCountdown(false);
           setCountdown(8);
           setPlayedTransition(false);
@@ -109,7 +109,7 @@ export default function StreamOverlay() {
     let current = timer;
     const interval = setInterval(() => {
       current--;
-      if (current === 90 && !playedTransition) {
+      if (current === 120 && !playedTransition) {
         clearInterval(interval);
         setIsInCountdown(true);
         setCountdown(8);
@@ -136,7 +136,7 @@ export default function StreamOverlay() {
         if (newCount <= 0) {
           clearInterval(countdownInterval);
           setIsInCountdown(false);
-          setTimer(90);
+          setTimer(120);
         }
         return newCount;
       });

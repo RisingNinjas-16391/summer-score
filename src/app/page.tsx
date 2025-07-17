@@ -224,10 +224,8 @@ export default function ScoreIndex() {
               backgroundColor: "#ffff00",
               color: "black",
             }}
-            onClick={async () => {
-              await updateDoc(doc(db, "realtime", "timer"), {
-                jacobJoke: true,
-              });
+            onClick={() => {
+              setDoc(doc(db, "realtime", "timer"), { jacobJoke: true });
             }}
           >
             Jacob just said a joke

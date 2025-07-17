@@ -99,6 +99,12 @@ export default function Scoreboard() {
       doc(db, "realtime", "timer"),
       async (docSnap) => {
         const data = docSnap.data();
+        if (data?.jacobJoke) {
+          sounds.womp?.play();
+          await updateDoc(doc(db, "realtime", "timer"), {
+            jacobJoke: false,
+          });
+        }
         if (data?.start) {
           setIsRunning(true);
           setIsPaused(false);
@@ -149,13 +155,6 @@ export default function Scoreboard() {
               ? "/animations/into_the_deep_blue.webm"
               : "/animations/into_the_deep_tie.webm"
           );
-        }
-
-        if (data?.jacobJoke) {
-          sounds.womp?.play();
-          await updateDoc(doc(db, "realtime", "timer"), {
-            jacobJoke: false, // reset the flag after playing
-          });
         }
       }
     );

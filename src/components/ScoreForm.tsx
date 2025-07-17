@@ -102,12 +102,7 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
 
     setScore(newScore);
 
-    setDoc(doc(db, "realtime", teamColor), newScore).catch((err) => {
-      console.error(
-        `[ERROR] Failed to send ${teamColor.toUpperCase()} score:`,
-        err
-      );
-    });
+    setDoc(doc(db, "realtime", teamColor), newScore);
   };
 
   const updateScore = (field: keyof ScoreData, delta: number) => {

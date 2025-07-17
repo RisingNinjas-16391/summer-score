@@ -392,6 +392,7 @@ export default function Scoreboard() {
             style={{ textAlign: "right", height: "100%" }}
           >
             <div
+              // red box
               style={{
                 backgroundColor: "#ff0000",
                 flex: 1,
@@ -414,6 +415,7 @@ export default function Scoreboard() {
               </Typography>
 
               <div
+                // score box
                 style={{
                   backgroundColor: "#ffffff",
                   color: "#000000",
@@ -432,7 +434,7 @@ export default function Scoreboard() {
                 <Typography
                   sx={{
                     fontWeight: "bold",
-                    fontSize: "6rem",
+                    fontSize: "8rem",
                   }}
                 >
                   {redDisplay}
@@ -440,7 +442,7 @@ export default function Scoreboard() {
                 <Typography
                   sx={{
                     fontWeight: "bold",
-                    fontSize: "3rem",
+                    fontSize: "4rem",
                   }}
                 >
                   {isRedWinner ? "WIN" : "⠀"}
@@ -448,25 +450,26 @@ export default function Scoreboard() {
               </div>
 
               <div
+                // breakdown box
                 style={{
                   backgroundColor: "#2c2c2c",
                   color: "#ffffff",
                   padding: "1.5rem",
                   borderRadius: "8px",
-                  width: "450px",
+                  width: "700px",
                   textAlign: "center",
                 }}
               >
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   AUTONOMOUS: {redBreakdown.auto}
                 </Typography>
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   DRIVER-CONTROL: {redBreakdown.teleop}
                 </Typography>
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   END GAME: {redBreakdown.endgame}
                 </Typography>
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   BLUE PENALTY: {bluePenalties * 5}
                 </Typography>
               </div>
@@ -519,7 +522,7 @@ export default function Scoreboard() {
                 <Typography
                   sx={{
                     fontWeight: "bold",
-                    fontSize: "6rem",
+                    fontSize: "8rem",
                   }}
                 >
                   {blueDisplay}
@@ -527,7 +530,7 @@ export default function Scoreboard() {
                 <Typography
                   sx={{
                     fontWeight: "bold",
-                    fontSize: "3rem",
+                    fontSize: "4rem",
                   }}
                 >
                   {isBlueWinner ? "WIN" : "⠀"}
@@ -540,20 +543,20 @@ export default function Scoreboard() {
                   color: "#ffffff",
                   padding: "1.5rem",
                   borderRadius: "8px",
-                  width: "450px",
+                  width: "700px",
                   textAlign: "center",
                 }}
               >
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   AUTONOMOUS: {blueBreakdown.auto}
                 </Typography>
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   DRIVER-CONTROL: {blueBreakdown.teleop}
                 </Typography>
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   END GAME: {blueBreakdown.endgame}
                 </Typography>
-                <Typography sx={{ fontWeight: "bold", fontSize: "2rem" }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: "3rem" }}>
                   RED PENALTY: {redPenalties * 5}
                 </Typography>
               </div>
@@ -597,7 +600,7 @@ export default function Scoreboard() {
         paddingBottom={1}
         alignItems="stretch"
       >
-        <Grid size={6} style={{ display: "flex" }}>
+        <Grid size={6} style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
               backgroundColor: "#ff0000",
@@ -616,23 +619,23 @@ export default function Scoreboard() {
             <Typography variant="h1" sx={{ fontWeight: "bold" }}>
               {redDisplay}
             </Typography>
-            {/* </div> */}
-            <Typography
-              className={redStatus !== "⠀" ? "fade-message" : ""}
-              sx={{
-                fontWeight: "bold",
-                color: "#ffff00",
-                fontSize: "2rem",
-                marginTop: "1rem",
-                // textAlign: "center",
-              }}
-            >
-              {redStatus}
-            </Typography>
           </div>
+
+          <Typography
+            className={redStatus !== "⠀" ? "fade-message" : ""}
+            sx={{
+              fontWeight: "bold",
+              color: "#ffff00",
+              fontSize: "2rem",
+              marginTop: "1rem",
+              textAlign: "center",
+            }}
+          >
+            {redStatus}
+          </Typography>
         </Grid>
 
-        <Grid size={6} style={{ display: "flex" }}>
+        <Grid size={6} style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
               backgroundColor: "#0000ff",
@@ -651,20 +654,20 @@ export default function Scoreboard() {
             <Typography variant="h1" sx={{ fontWeight: "bold" }}>
               {blueDisplay}
             </Typography>
-            {/* </div> */}
-            <Typography
-              className={blueStatus !== "⠀" ? "fade-message" : ""}
-              sx={{
-                fontWeight: "bold",
-                fontSize: "2rem",
-                color: "#ffff00",
-                marginTop: "1rem",
-                // textAlign: "center",
-              }}
-            >
-              {blueStatus}
-            </Typography>
           </div>
+
+          <Typography
+            className={blueStatus !== "⠀" ? "fade-message" : ""}
+            sx={{
+              fontWeight: "bold",
+              fontSize: "2rem",
+              color: "#ffff00",
+              marginTop: "1rem",
+              textAlign: "center",
+            }}
+          >
+            {blueStatus}
+          </Typography>
         </Grid>
       </Grid>
 

@@ -41,28 +41,6 @@ export default function Scoreboard() {
   const redTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const blueTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  <style jsx global>{`
-    .fade-message {
-      opacity: 0;
-      animation: fadeInOut 1s ease-in-out forwards;
-    }
-
-    @keyframes fadeInOut {
-      0% {
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-      }
-    }
-  `}</style>;
-
   const [redBreakdown, setRedBreakdown] = useState({
     auto: 0,
     teleop: 0,
@@ -96,6 +74,7 @@ export default function Scoreboard() {
     results: undefined as HTMLAudioElement | undefined,
     aborted: undefined as HTMLAudioElement | undefined,
     sonar: undefined as HTMLAudioElement | undefined,
+    womp: undefined as HTMLAudioElement | undefined,
   });
 
   useEffect(() => {
@@ -110,6 +89,7 @@ export default function Scoreboard() {
         results: new Audio("/sounds/results.wav"),
         aborted: new Audio("/sounds/fogblast.wav"),
         sonar: new Audio("/sounds/warning_sonar.wav"),
+        womp: new Audio("/sounds/abort.wav"),
       });
     }
   }, []);
@@ -169,6 +149,13 @@ export default function Scoreboard() {
               ? "/animations/into_the_deep_blue.webm"
               : "/animations/into_the_deep_tie.webm"
           );
+        }
+
+        if (data?.jacobJoke) {
+          sounds.womp?.play();
+          await updateDoc(doc(db, "realtime", "timer"), {
+            jacobJoke: false, // reset the flag after playing
+          });
         }
       }
     );
@@ -336,20 +323,6 @@ export default function Scoreboard() {
     ? blueScore + redPenalties * 5
     : bluePrelim;
 
-  <style jsx global>{`
-    .fade-in {
-      animation: fadeIn 1s ease-in-out;
-    }
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-  `}</style>;
-
   if (showResultsScreen) {
     const isRedWinner = redDisplay > blueDisplay;
     const isBlueWinner = blueDisplay > redDisplay;
@@ -357,7 +330,6 @@ export default function Scoreboard() {
     return (
       // RESULTS SCREEN
       <div
-        className="fade-in"
         style={{
           height: "100vh",
           width: "100vw",

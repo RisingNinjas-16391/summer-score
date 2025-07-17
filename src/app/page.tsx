@@ -216,6 +216,22 @@ export default function ScoreIndex() {
           >
             Abort Match
           </Button>
+
+          <Button
+            variant="contained"
+            style={{
+              margin: "0.5rem",
+              backgroundColor: "#ffff00",
+              color: "black",
+            }}
+            onClick={async () => {
+              await updateDoc(doc(db, "realtime", "timer"), {
+                jacobJoke: true,
+              });
+            }}
+          >
+            Jacob just said a joke
+          </Button>
         </div>
       </center>
     </div>

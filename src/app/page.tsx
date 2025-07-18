@@ -231,6 +231,27 @@ export default function ScoreIndex() {
             Jacob just said a joke
           </Button>
         </div>
+        {[...Array(7)].map((_, i) => {
+          const teamNum = i + 1;
+          return (
+            <Button
+              key={teamNum}
+              variant="outlined"
+              style={{
+                margin: "0.5rem",
+                color: "#ffffff",
+                borderColor: "#ffffff",
+              }}
+              onClick={async () => {
+                await setDoc(doc(db, "realtime", "walkout"), {
+                  team: teamNum,
+                });
+              }}
+            >
+              Team {teamNum} Walkout
+            </Button>
+          );
+        })}
       </center>
     </div>
   );

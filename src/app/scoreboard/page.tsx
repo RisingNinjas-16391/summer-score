@@ -89,9 +89,100 @@ export default function Scoreboard() {
         results: new Audio("/sounds/results.wav"),
         aborted: new Audio("/sounds/fogblast.wav"),
         sonar: new Audio("/sounds/warning_sonar.wav"),
-        womp: new Audio("/sounds/abort.wav"),
+        womp: new Audio("/sounds/womp.wav"),
       });
     }
+  }, []);
+
+  useEffect(() => {
+    let currentAudio: HTMLAudioElement | null = null;
+    let currentTeam: number | null = null;
+
+    const fadeAudio = (
+      audio: HTMLAudioElement,
+      fadeType: "in" | "out",
+      duration = 5000
+    ): Promise<void> => {
+      return new Promise((resolve) => {
+        const step = 50; // ms
+        const volumeStep = step / duration;
+
+        const interval = setInterval(() => {
+          if (!audio) {
+            clearInterval(interval);
+            return resolve();
+          }
+
+          if (fadeType === "in") {
+            audio.volume = Math.min(1, audio.volume + volumeStep);
+            if (audio.volume >= 1) {
+              clearInterval(interval);
+              return resolve();
+            }
+          } else {
+            audio.volume = Math.max(0, audio.volume - volumeStep);
+            if (audio.volume <= 0) {
+              audio.pause();
+              audio.currentTime = 0;
+              clearInterval(interval);
+              return resolve();
+            }
+          }
+        }, step);
+      });
+    };
+
+    const unsubWalkout = onSnapshot(
+      doc(db, "realtime", "walkout"),
+      async (docSnap) => {
+        const data = docSnap.data();
+        const team = data?.team;
+
+        if (!team || team < 1 || team > 7) return;
+
+        const walkoutSounds: { [key: number]: string } = {
+          1: "/sounds/walkouts/1_Final Countdown.mp3",
+          2: "/sounds/walkouts/2_Thick of It.mp3",
+          3: "/sounds/walkouts/3_Waiting for Love.mp3",
+          4: "/sounds/walkouts/4_Seven Nation Army.mp3",
+          5: "/sounds/walkouts/5_Radioactive.mp3",
+          6: "/sounds/walkouts/6_Back One Day.mp3",
+          7: "/sounds/walkouts/7_Trap Queen.mp3",
+        };
+
+        const newSrc = walkoutSounds[team];
+
+        if (currentTeam === team) {
+          // Same team again: fade out and stop
+          if (currentAudio) await fadeAudio(currentAudio, "out");
+          currentAudio = null;
+          currentTeam = null;
+        } else {
+          // Different team
+          if (currentAudio) {
+            await fadeAudio(currentAudio, "out");
+            currentAudio = null;
+          }
+
+          const audio = new Audio(newSrc);
+          audio.volume = 0;
+          audio.play();
+
+          currentAudio = audio;
+          currentTeam = team;
+
+          await fadeAudio(audio, "in");
+        }
+
+        // Clear the Firestore trigger
+        await updateDoc(doc(db, "realtime", "walkout"), { team: null });
+      }
+    );
+
+    return () => {
+      if (currentAudio) currentAudio.pause();
+      unsubWalkout();
+    };
   }, []);
 
   useEffect(() => {
@@ -356,7 +447,7 @@ export default function Scoreboard() {
           {match.match_number} — Results
         </Typography>
 
-        <Grid container spacing={2} style={{ paddingTop: "5rem" }}>
+        <Grid container spacing={2} style={{ paddingTop: "1rem" }}>
           {/* RED Side */}
           <Grid
             size={{ xs: 12, sm: 6 }}

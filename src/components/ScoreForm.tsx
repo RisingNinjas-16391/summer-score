@@ -10,18 +10,17 @@ export type CapOptions = "blue" | "red" | "";
 
 export type ScoreData = {
   teamColor: CapOptions;
-  sample: number;
+  autoBalls: number;
   parked: boolean;
   autoScore: number;
-  teleopLowBar: number;
-  teleopHighBar: number;
-  teleopProcessing: number;
+  centerBalls: number;
+  sideBalls: number;
+  matchingBalls: number;
+  perfectMatch: boolean;
   teleopScore: number;
-  yellowLowBar: boolean;
-  yellowHighBar: boolean;
   climbed: boolean;
-  ring: boolean;
-  endgameOwnedBars: number;
+  climbAmplified: boolean;
+  ownedMiddle: boolean;
   postMatchAddedPoints: number;
   totalScore: number;
   penalties: number;
@@ -35,18 +34,17 @@ interface ScoreFormProps {
 function ScoreForm({ teamColor }: ScoreFormProps) {
   const [score, setScore] = useState<ScoreData>({
     teamColor: teamColor as CapOptions,
-    sample: 0,
+    autoBalls: 0,
     parked: false,
     autoScore: 0,
-    teleopLowBar: 0,
-    teleopHighBar: 0,
-    teleopProcessing: 0,
+    centerBalls: 0,
+    sideBalls: 0,
     teleopScore: 0,
-    yellowLowBar: false,
-    yellowHighBar: false,
+    ownedMiddle: false,
     climbed: false,
-    ring: false,
-    endgameOwnedBars: 0,
+    climbAmplified: false,
+    matchingBalls: 0,
+    perfectMatch: false,
     preliminaryScore: 0,
     postMatchAddedPoints: 0,
     penalties: 0,
@@ -74,19 +72,18 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
       : "white";
 
   const updateAndSave = (updated: ScoreData) => {
-    const autoScore = updated.sample * 10 + (updated.parked ? 5 : 0);
+    const autoScore = updated.autoBalls * 5 + (updated.parked ? 5 : 0);
 
     const teleopScore =
-      updated.teleopLowBar * 5 +
-      updated.teleopHighBar * 7 +
-      updated.teleopProcessing * 5 +
-      (updated.yellowLowBar ? 10 : 0) +
-      (updated.yellowHighBar ? 14 : 0);
+      updated.centerBalls * 5 +
+      updated.sideBalls * 10 +
+      (updated.climbed ? 10 : 0) +
+      (updated.climbAmplified ? 10 : 0);
 
     const postMatchAddedPoints =
-      updated.endgameOwnedBars * 15 +
-      (updated.climbed ? 10 : 0) +
-      (updated.ring ? 10 : 0);
+      updated.matchingBalls * 5 +
+      (updated.perfectMatch ? 20 : 0) +
+      (updated.ownedMiddle ? 20 : 0);
 
     const preliminary = autoScore + teleopScore;
     const total = preliminary + postMatchAddedPoints;
@@ -173,7 +170,7 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           >
             Auto
           </Typography>
-          {renderCounter("Samples", "sample")}
+          {renderCounter("Balls Scored", "autoBalls")}
           <FormControlLabel
             control={
               <Checkbox
@@ -198,49 +195,8 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           >
             Driver-Control
           </Typography>
-          {renderCounter("Low Bar Specimens", "teleopLowBar")}
-          {renderCounter("High Bar Specimens", "teleopHighBar")}
-          {renderCounter("Samples Processed", "teleopProcessing")}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={score.yellowLowBar}
-                onChange={(e) =>
-                  updateAndSave({ ...score, yellowLowBar: e.target.checked })
-                }
-                sx={{ color: textColor }}
-              />
-            }
-            label={
-              <Typography style={{ color: textColor }}>Yellow Specimen on Low Bar?</Typography>
-            }
-            sx={{ mt: 2 }}
-          />
-                    <FormControlLabel
-            control={
-              <Checkbox
-                checked={score.yellowHighBar}
-                onChange={(e) =>
-                  updateAndSave({ ...score, yellowHighBar: e.target.checked })
-                }
-                sx={{ color: textColor }}
-              />
-            }
-            label={
-              <Typography style={{ color: textColor }}>Yellow Specimen on High Bar?</Typography>
-            }
-            sx={{ mt: 2 }}
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 3 }}>
-          <Typography
-            variant="h5"
-            style={{ color: textColor, marginBottom: "1rem" }}
-          >
-            Post-Match
-          </Typography>
-          {renderCounter("Bars Owned", "endgameOwnedBars")}
+          {renderCounter("Center Balls", "centerBalls")}
+          {renderCounter("Side Balls", "sideBalls")}
           <FormControlLabel
             control={
               <Checkbox
@@ -260,15 +216,61 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           <FormControlLabel
             control={
               <Checkbox
-                checked={score.ring}
+                checked={score.climbAmplified}
                 onChange={(e) =>
-                  updateAndSave({ ...score, ring: e.target.checked })
+                  updateAndSave({ ...score, climbAmplified: e.target.checked })
                 }
                 sx={{ color: textColor }}
               />
             }
             label={
-              <Typography style={{ color: textColor }}>Ring Scored?</Typography>
+              <Typography style={{ color: textColor }}>Climb Amplified?</Typography>
+            }
+            sx={{ mt: 2 }}
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <Typography
+            variant="h5"
+            style={{ color: textColor, marginBottom: "1rem" }}
+          >
+            Post-Match
+          </Typography>
+          {renderCounter("Balls Matching Sequence", "matchingBalls")}
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={score.ownedMiddle}
+                onChange={(e) =>
+                  updateAndSave({ ...score, ownedMiddle: e.target.checked })
+                }
+                sx={{ color: textColor }}
+              />
+            }
+            label={
+              <Typography style={{ color: textColor }}>
+                Middle Tower Owned?
+              </Typography>
+            }
+            sx={{ mt: 2 }}
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={score.perfectMatch}
+                onChange={(e) =>
+                  updateAndSave({ ...score, perfectMatch: e.target.checked })
+                }
+                sx={{ color: textColor }}
+              />
+            }
+            label={
+              <Typography style={{ color: textColor }}>
+                Perfectly Matched Sequence?
+              </Typography>
             }
             sx={{ mt: 2 }}
           />

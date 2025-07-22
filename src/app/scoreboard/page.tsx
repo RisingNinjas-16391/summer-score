@@ -241,10 +241,10 @@ export default function Scoreboard() {
 
           setAnimationSrc(
             redFinal > blueFinal
-              ? "/animations/into_the_deep_red.webm"
+              ? "/animations/deep_space_red.mp4"
               : blueFinal > redFinal
-              ? "/animations/into_the_deep_blue.webm"
-              : "/animations/into_the_deep_tie.webm"
+              ? "/animations/deep_space_blue.mp4"
+              : "/animations/deep_space_tie.mp4"
           );
         }
       }

@@ -228,10 +228,10 @@ export default function ScoreIndex() {
               setDoc(doc(db, "realtime", "timer"), { jacobJoke: true });
             }}
           >
-            Jacob just said a joke
+            Javi just said a joke
           </Button>
         </div>
-        {[...Array(7)].map((_, i) => {
+        {[...Array(5)].map((_, i) => {
           const teamNum = i + 1;
           return (
             <Button

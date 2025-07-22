@@ -101,7 +101,7 @@ export default function Scoreboard() {
     const fadeAudio = (
       audio: HTMLAudioElement,
       fadeType: "in" | "out",
-      duration = 5000
+      duration = 2500
     ): Promise<void> => {
       return new Promise((resolve) => {
         const step = 50; // ms

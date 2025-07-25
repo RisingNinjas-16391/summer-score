@@ -45,6 +45,26 @@ export default function ScoreIndex() {
           }}
         />
         <select
+          value={blueName}
+          onChange={(e) => setBlueName(e.target.value)}
+          onBlur={updateMatchInfo}
+          style={{
+            margin: "0.5rem",
+            padding: "0.5rem",
+            backgroundColor: "#2a2a2a",
+            color: "#0000ff",
+            border: "1px solid #0000ff",
+            borderRadius: "4px",
+          }}
+        >
+          <option value="">None</option>
+          {teamOptions.map((team) => (
+            <option key={team} value={team}>
+              {team}
+            </option>
+          ))}
+        </select>
+        <select
           value={redName}
           onChange={(e) => setRedName(e.target.value)}
           onBlur={updateMatchInfo}
@@ -65,40 +85,7 @@ export default function ScoreIndex() {
           ))}
         </select>
 
-        <select
-          value={blueName}
-          onChange={(e) => setBlueName(e.target.value)}
-          onBlur={updateMatchInfo}
-          style={{
-            margin: "0.5rem",
-            padding: "0.5rem",
-            backgroundColor: "#2a2a2a",
-            color: "#0000ff",
-            border: "1px solid #0000ff",
-            borderRadius: "4px",
-          }}
-        >
-          <option value="">None</option>
-          {teamOptions.map((team) => (
-            <option key={team} value={team}>
-              {team}
-            </option>
-          ))}
-        </select>
-
         <div style={{ marginTop: "1rem" }}>
-          <Link
-            href="/red-score"
-            target="_blank"
-            style={{
-              color: "#ff0000",
-              margin: "1rem",
-              display: "inline-block",
-              textDecoration: "underline",
-            }}
-          >
-            Red
-          </Link>
           <Link
             href="/blue-score"
             target="_blank"
@@ -110,6 +97,18 @@ export default function ScoreIndex() {
             }}
           >
             Blue
+          </Link>
+          <Link
+            href="/red-score"
+            target="_blank"
+            style={{
+              color: "#ff0000",
+              margin: "1rem",
+              display: "inline-block",
+              textDecoration: "underline",
+            }}
+          >
+            Red
           </Link>
           <Link
             href="/scoreboard"
@@ -236,11 +235,11 @@ export default function ScoreIndex() {
           return (
             <Button
               key={teamNum}
-              variant="outlined"
+              variant="contained"
               style={{
                 margin: "0.5rem",
-                color: "#ffffff",
-                borderColor: "#ffffff",
+                color: "#000000",
+                backgroundColor: "#ffffff",
               }}
               onClick={async () => {
                 await setDoc(doc(db, "realtime", "walkout"), {

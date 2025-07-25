@@ -160,13 +160,15 @@ export default function StreamOverlay() {
     return () => unsubReveal();
   }, []);
 
-  const redDisplay = showFinalScore && revealFinalScores
-   ? redScore + bluePenalties * 5 
-   : redPrelim;
+  const redDisplay =
+    showFinalScore && revealFinalScores
+      ? redScore + bluePenalties * 5
+      : redPrelim;
 
-  const blueDisplay = showFinalScore && revealFinalScores
-    ? blueScore + redPenalties * 5
-    : bluePrelim;
+  const blueDisplay =
+    showFinalScore && revealFinalScores
+      ? blueScore + redPenalties * 5
+      : bluePrelim;
 
   const formatTime = (time: number) =>
     `${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, "0")}`;
@@ -193,7 +195,7 @@ export default function StreamOverlay() {
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
           style={{
-            backgroundColor: "#ff0000",
+            backgroundColor: "#0000ff",
             padding: "0 2.5rem",
             height: "250px",
             display: "flex",
@@ -204,7 +206,7 @@ export default function StreamOverlay() {
             fontSize: "3rem",
           }}
         >
-          {teamMap[match.red_name] || match.red_name}
+          {teamMap[match.blue_name] || match.blue_name}
         </div>
 
         <div
@@ -221,7 +223,7 @@ export default function StreamOverlay() {
             fontSize: "8rem",
           }}
         >
-          {redDisplay}
+          {blueDisplay}
         </div>
       </div>
 
@@ -260,12 +262,12 @@ export default function StreamOverlay() {
             fontSize: "8rem",
           }}
         >
-          {blueDisplay}
+          {redDisplay}
         </div>
 
         <div
           style={{
-            backgroundColor: "#0000ff",
+            backgroundColor: "#ff0000",
             padding: "0 2.5rem",
             height: "250px",
             display: "flex",
@@ -276,7 +278,7 @@ export default function StreamOverlay() {
             fontSize: "3rem",
           }}
         >
-          {teamMap[match.blue_name] || match.blue_name}
+          {teamMap[match.red_name] || match.red_name}
         </div>
       </div>
     </div>

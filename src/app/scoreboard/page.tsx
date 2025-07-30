@@ -144,7 +144,6 @@ export default function Scoreboard() {
         if (!team || team < 1 || team > 5) return;
 
         const walkoutSounds: { [key: number]: string } = {
-          
           1: "/sounds/walkouts/1_Radioactive.mp3",
           2: "/sounds/walkouts/2_Young Black & Rich.mp3",
           3: "/sounds/walkouts/3_Waiting for Love.mp3",

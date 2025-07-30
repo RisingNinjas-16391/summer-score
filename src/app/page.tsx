@@ -8,7 +8,6 @@ import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { teamMap } from "@/lib/teamMap";
 
 export default function ScoreIndex() {
-  const [ballSequence, setBallSequence] = useState<string[]>([]);
   const [sequenceGenerated, setSequenceGenerated] = useState(false);
 
   const [matchNumber, setMatchNumber] = useState("");
@@ -49,12 +48,11 @@ export default function ScoreIndex() {
       .map(({ ball }) => ball)
       .slice(0, 6);
 
-    setBallSequence(shuffled);
     setSequenceGenerated(true);
 
     updateDoc(doc(db, "realtime", "sequence"), {
       balls: shuffled,
-      randomize: true
+      randomize: true,
     });
   };
 
@@ -247,7 +245,6 @@ export default function ScoreIndex() {
               setMatchNumber("");
               setRedName("");
               setBlueName("");
-              setBallSequence([]);
               setSequenceGenerated(false);
             }}
           >

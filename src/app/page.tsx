@@ -8,6 +8,9 @@ import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { teamMap } from "@/lib/teamMap";
 
 export default function ScoreIndex() {
+  const [ballSequence, setBallSequence] = useState<string[]>([]);
+  const [sequenceGenerated, setSequenceGenerated] = useState(false);
+
   const [matchNumber, setMatchNumber] = useState("");
   const [redName, setRedName] = useState("");
   const [blueName, setBlueName] = useState("");
@@ -19,6 +22,39 @@ export default function ScoreIndex() {
       match_number: matchNumber,
       red_name: redName,
       blue_name: blueName,
+    });
+  };
+
+  const generateBallSequence = async () => {
+    const balls = [
+      "🥎",
+      "🥎",
+      "🏀",
+      "🏀",
+      "🏀",
+      "🏀",
+      "⚾",
+      "⚾",
+      "⚽",
+      "⚽",
+      "🩷",
+      "🩷",
+      "🩷",
+      "🩷",
+    ];
+
+    const shuffled = balls
+      .map((ball) => ({ ball, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ ball }) => ball)
+      .slice(0, 6);
+
+    setBallSequence(shuffled);
+    setSequenceGenerated(true);
+
+    updateDoc(doc(db, "realtime", "sequence"), {
+      balls: shuffled,
+      randomize: true
     });
   };
 
@@ -153,6 +189,19 @@ export default function ScoreIndex() {
 
           <Button
             variant="contained"
+            disabled={sequenceGenerated}
+            style={{
+              backgroundColor: "#ff00ff",
+              color: "#000000",
+              margin: "0.5rem",
+            }}
+            onClick={generateBallSequence}
+          >
+            Generate Ball Sequence
+          </Button>
+
+          <Button
+            variant="contained"
             style={{
               margin: "0.5rem",
               backgroundColor: "#00ff00",
@@ -190,10 +239,16 @@ export default function ScoreIndex() {
                 totalScore: 0,
               });
 
+              await setDoc(doc(db, "realtime", "sequence"), {
+                balls: [],
+              });
+
               // Clear the input fields
               setMatchNumber("");
               setRedName("");
               setBlueName("");
+              setBallSequence([]);
+              setSequenceGenerated(false);
             }}
           >
             Reset Match
@@ -224,7 +279,7 @@ export default function ScoreIndex() {
               color: "black",
             }}
             onClick={() => {
-              setDoc(doc(db, "realtime", "timer"), { jacobJoke: true });
+              updateDoc(doc(db, "realtime", "timer"), { jacobJoke: true });
             }}
           >
             Javi just said a joke

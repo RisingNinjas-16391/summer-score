@@ -63,6 +63,7 @@ export default function Scoreboard() {
 
   const [showAnimation, setShowAnimation] = useState(false);
   const [animationSrc, setAnimationSrc] = useState("");
+  const [ballSequence, setBallSequence] = useState<string[]>([]);
 
   const [sounds, setSounds] = useState({
     matchStart: undefined as HTMLAudioElement | undefined,
@@ -75,6 +76,7 @@ export default function Scoreboard() {
     aborted: undefined as HTMLAudioElement | undefined,
     sonar: undefined as HTMLAudioElement | undefined,
     womp: undefined as HTMLAudioElement | undefined,
+    randomize: undefined as HTMLAudioElement | undefined,
   });
 
   useEffect(() => {
@@ -90,6 +92,7 @@ export default function Scoreboard() {
         aborted: new Audio("/sounds/fogblast.wav"),
         sonar: new Audio("/sounds/warning_sonar.wav"),
         womp: new Audio("/sounds/womp.wav"),
+        randomize: new Audio("/sounds/randomize.wav"),
       });
     }
   }, []);
@@ -138,16 +141,15 @@ export default function Scoreboard() {
         const data = docSnap.data();
         const team = data?.team;
 
-        if (!team || team < 1 || team > 7) return;
+        if (!team || team < 1 || team > 5) return;
 
         const walkoutSounds: { [key: number]: string } = {
-          1: "/sounds/walkouts/1_Final Countdown.mp3",
-          2: "/sounds/walkouts/2_Thick of It.mp3",
+          
+          1: "/sounds/walkouts/1_Radioactive.mp3",
+          2: "/sounds/walkouts/2_Young Black & Rich.mp3",
           3: "/sounds/walkouts/3_Waiting for Love.mp3",
-          4: "/sounds/walkouts/4_Seven Nation Army.mp3",
-          5: "/sounds/walkouts/5_Radioactive.mp3",
-          6: "/sounds/walkouts/6_Back One Day.mp3",
-          7: "/sounds/walkouts/7_Trap Queen.mp3",
+          4: "/sounds/walkouts/4_Without Me.mp3",
+          5: "/sounds/walkouts/5_Thunderstruck.mp3",
         };
 
         const newSrc = walkoutSounds[team];
@@ -184,6 +186,43 @@ export default function Scoreboard() {
       unsubWalkout();
     };
   }, []);
+
+  useEffect(() => {
+    const unsubSequence = onSnapshot(
+      doc(db, "realtime", "sequence"),
+      async (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+
+          // If randomize is true, play the sound first
+          if (data.randomize && sounds.randomize) {
+            // Temporarily hide the sequence while the sound plays
+            setBallSequence([]);
+
+            // Play the sound and wait for it to finish
+            await new Promise<void>((resolve) => {
+              sounds.randomize!.currentTime = 0;
+              sounds.randomize!.play();
+              sounds.randomize!.onended = () => resolve();
+            });
+
+            // Display the sequence after sound
+            setBallSequence(data.balls || []);
+
+            // Reset the flag
+            await updateDoc(doc(db, "realtime", "sequence"), {
+              randomize: false,
+            });
+          } else {
+            // Fallback display if randomize was not set
+            setBallSequence(data.balls || []);
+          }
+        }
+      }
+    );
+
+    return () => unsubSequence();
+  }, [sounds]);
 
   useEffect(() => {
     const unsubTimer = onSnapshot(
@@ -732,17 +771,37 @@ export default function Scoreboard() {
         </Grid>
       </Grid>
 
-      <Grid container justifyContent="center" paddingTop={2}>
-        <Typography
-          variant="h1"
-          sx={{ fontSize: "clamp(6rem, 15vw, 12rem)", fontWeight: "bold" }}
-        >
-          {isInCountdown
-            ? `0:${countdown.toString().padStart(2, "0")}`
-            : `${Math.floor(timer / 60)}:${(timer % 60)
-                .toString()
-                .padStart(2, "0")}`}
-        </Typography>
+      <Grid container direction="column" alignItems="center" paddingTop={2}>
+        <Grid size={12}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: "bold",
+              color: "#ffffff",
+              textAlign: "center",
+              marginBottom: "0.5rem",
+            }}
+          >
+            Sequence: {ballSequence.length > 0 ? ballSequence.join(" ") : "⠀"}
+          </Typography>
+        </Grid>
+
+        <Grid size={12}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: "clamp(6rem, 15vw, 12rem)",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            {isInCountdown
+              ? `0:${countdown.toString().padStart(2, "0")}`
+              : `${Math.floor(timer / 60)}:${(timer % 60)
+                  .toString()
+                  .padStart(2, "0")}`}
+          </Typography>
+        </Grid>
       </Grid>
 
       {showAnimation && animationSrc && (

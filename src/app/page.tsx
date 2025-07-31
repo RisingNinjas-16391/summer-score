@@ -168,6 +168,18 @@ export default function ScoreIndex() {
           >
             Overlay
           </Link>
+          <Link
+            href="/color-flash"
+            target="_blank"
+            style={{
+              color: "white",
+              margin: "1rem",
+              display: "inline-block",
+              textDecoration: "underline",
+            }}
+          >
+            Color Flash
+          </Link>
         </div>
 
         <div style={{ marginTop: "2rem" }}>

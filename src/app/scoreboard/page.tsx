@@ -77,6 +77,8 @@ export default function Scoreboard() {
     sonar: undefined as HTMLAudioElement | undefined,
     womp: undefined as HTMLAudioElement | undefined,
     randomize: undefined as HTMLAudioElement | undefined,
+    redTTS: undefined as HTMLAudioElement | undefined,
+    blueTTS: undefined as HTMLAudioElement | undefined,
   });
 
   useEffect(() => {
@@ -93,6 +95,8 @@ export default function Scoreboard() {
         sonar: new Audio("/sounds/warning_sonar.wav"),
         womp: new Audio("/sounds/womp.wav"),
         randomize: new Audio("/sounds/randomize.wav"),
+        redTTS: new Audio("/sounds/TTS/red.mp3"),
+        blueTTS: new Audio("/sounds/TTS/blue.mp3"),
       });
     }
   }, []);
@@ -337,6 +341,34 @@ export default function Scoreboard() {
 
     return () => clearInterval(countdownInterval);
   }, [isInCountdown, countdown, sounds]);
+
+  const flashAudioIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const flashCountRef = useRef<number>(0);
+
+  // START flashing at timer === 120
+  useEffect(() => {
+    if (!sounds.redTTS || !sounds.blueTTS) return;
+
+    // Only trigger sound every 5 seconds between 120 and 60
+    if (timer <= 120 && timer > 60 && timer % 5 === 0) {
+      const stepIndex = (120 - timer) / 5;
+      const ttsKey = stepIndex % 2 === 0 ? "redTTS" : "blueTTS";
+
+      const audio = sounds[ttsKey];
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+      }
+    }
+  }, [timer, sounds.redTTS, sounds.blueTTS]);
+
+  // CLEANUP when timer drops below 60
+  useEffect(() => {
+    if (timer < 60 && flashAudioIntervalRef.current) {
+      clearInterval(flashAudioIntervalRef.current);
+      flashAudioIntervalRef.current = null;
+    }
+  }, [timer]);
 
   useEffect(() => {
     const unsubMatch = onSnapshot(doc(db, "realtime", "matches"), (docSnap) => {

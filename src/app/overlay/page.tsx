@@ -66,31 +66,29 @@ export default function StreamOverlay() {
     });
 
     const unsubTimer = onSnapshot(doc(db, "realtime", "timer"), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.start) {
-          setIsRunning(true);
-          setIsPaused(false);
-          setPlayedTransition(false);
-          setShowFinalScore(false);
-        }
-        if (data.reset) {
-          setIsRunning(false);
-          setTimer(150);
-          setIsInCountdown(false);
-          setCountdown(8);
-          setPlayedTransition(false);
-          setIsPaused(false);
-          setShowFinalScore(false);
-        }
-        if (data.paused) {
-          setIsPaused(true);
-          setIsRunning(false);
-        }
-        if (data.finished) {
-          setIsRunning(false);
-          setShowFinalScore(true);
-        }
+      const data = docSnap.data();
+      if (data?.start) {
+        setIsRunning(true);
+        setIsPaused(false);
+        setPlayedTransition(false);
+        setShowFinalScore(false);
+      }
+      if (data?.reset) {
+        setIsRunning(false);
+        setTimer(150);
+        setIsInCountdown(false);
+        setCountdown(8);
+        setPlayedTransition(false);
+        setIsPaused(false);
+        setShowFinalScore(false);
+      }
+      if (data?.paused) {
+        setIsPaused(true);
+        setIsRunning(false);
+      }
+      if (data?.finished) {
+        setIsRunning(false);
+        setShowFinalScore(true);
       }
     });
 

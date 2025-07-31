@@ -802,22 +802,16 @@ export default function Scoreboard() {
         </Grid>
       </Grid>
 
-      <Grid container direction="column" alignItems="center" paddingTop={2}>
-        <Grid size={12}>
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: "bold",
-              color: "#ffffff",
-              textAlign: "center",
-              marginBottom: "0.5rem",
-            }}
-          >
-            Sequence: {ballSequence.length > 0 ? ballSequence.join(" ") : "⠀"}
-          </Typography>
-        </Grid>
-
-        <Grid size={12}>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        spacing={4}
+        paddingTop={2}
+      >
+        {/* Timer */}
+        <Grid>
           <Typography
             variant="h1"
             sx={{
@@ -832,6 +826,46 @@ export default function Scoreboard() {
                   .toString()
                   .padStart(2, "0")}`}
           </Typography>
+        </Grid>
+
+        {/* Vertical sequence, rotated 90° counterclockwise */}
+        <Grid
+          container
+          direction="row"
+          alignItems="flex-start"
+          justifyContent="center"
+          spacing={2}
+          style={{ marginTop: "-1rem" }} // nudges entire row up
+        >
+          {/* Vertical sequence */}
+          <Grid>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginTop: "-1rem", // <- nudges it up relative to timer
+              }}
+            >
+              {ballSequence.length > 0 ? (
+                ballSequence.map((emoji, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      transform: "rotate(-90deg)",
+                      fontSize: "2.5rem",
+                      margin: "0.1rem 0",
+                    }}
+                  >
+                    {emoji}
+                  </div>
+                ))
+              ) : (
+                <div style={{ fontSize: "2rem", opacity: 0.5 }}>⠀</div>
+              )}
+            </div>
+          </Grid>
         </Grid>
       </Grid>
 

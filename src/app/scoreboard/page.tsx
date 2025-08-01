@@ -299,24 +299,37 @@ export default function Scoreboard() {
     if (!isRunning || isInCountdown || isPaused) return;
 
     let current = timer;
+
     const interval = setInterval(() => {
-      current--;
-      if (current === 120 && !playedTransition) {
-        clearInterval(interval);
-        setIsInCountdown(true);
-        setCountdown(8);
-        setPlayedTransition(true);
-        sounds.autonomousComplete?.play();
-        return;
-      }
-      if (current === 60) sounds.sonar?.play();
-      if (current === 15) sounds.endgameStart?.play();
-      if (current === 0) {
-        clearInterval(interval);
-        sounds.matchEnd?.play();
-        setIsRunning(false);
-      }
-      setTimer(current);
+      (async () => {
+        current--;
+
+        if (current === 120 && !playedTransition) {
+          clearInterval(interval);
+          setIsInCountdown(true);
+          setCountdown(8);
+          setPlayedTransition(true);
+          sounds.autonomousComplete?.play();
+          return;
+        }
+
+        if (current === 110) {
+          sounds.sonar?.play();
+          await updateDoc(doc(db, "realtime", "arduinoCommand"), {
+            command: "trigger_1_minute",
+          });
+        }
+
+        if (current === 15) sounds.endgameStart?.play();
+
+        if (current === 0) {
+          clearInterval(interval);
+          sounds.matchEnd?.play();
+          setIsRunning(false);
+        }
+
+        setTimer(current);
+      })();
     }, 1000);
 
     return () => clearInterval(interval);
@@ -343,7 +356,6 @@ export default function Scoreboard() {
   }, [isInCountdown, countdown, sounds]);
 
   const flashAudioIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const flashCountRef = useRef<number>(0);
 
   // START flashing at timer === 120
   useEffect(() => {

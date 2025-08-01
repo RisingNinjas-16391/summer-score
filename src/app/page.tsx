@@ -253,6 +253,10 @@ export default function ScoreIndex() {
                 balls: [],
               });
 
+              await setDoc(doc(db, "realtime", "gate"), {
+                gateClosed: false,
+              });
+
               // Clear the input fields
               setMatchNumber("");
               setRedName("");

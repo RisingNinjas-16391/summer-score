@@ -313,10 +313,10 @@ export default function Scoreboard() {
           return;
         }
 
-        if (current === 110) {
+        if (current === 60) {
           sounds.sonar?.play();
-          await updateDoc(doc(db, "realtime", "arduinoCommand"), {
-            command: "trigger_1_minute",
+          await updateDoc(doc(db, "realtime", "gate"), {
+            gateClosed: true,
           });
         }
 
@@ -822,6 +822,45 @@ export default function Scoreboard() {
         spacing={4}
         paddingTop={2}
       >
+        {/* Vertical sequence, rotated 90° counterclockwise */}
+        <Grid
+          container
+          direction="row"
+          alignItems="flex-start"
+          justifyContent="center"
+          spacing={2}
+          style={{ marginTop: "-1rem" }} // nudges entire row up
+        >
+          {/* Vertical sequence */}
+          <Grid>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginTop: "-1rem", // <- nudges it up relative to timer
+              }}
+            >
+              {ballSequence.length > 0 ? (
+                ballSequence.map((emoji, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      transform: "rotate(-90deg)",
+                      fontSize: "3.5rem",
+                      margin: "0.1rem 0",
+                    }}
+                  >
+                    {emoji}
+                  </div>
+                ))
+              ) : (
+                <div style={{ fontSize: "2rem", opacity: 0.5 }}>⠀</div>
+              )}
+            </div>
+          </Grid>
+        </Grid>
         {/* Timer */}
         <Grid>
           <Typography
@@ -866,7 +905,7 @@ export default function Scoreboard() {
                     key={index}
                     style={{
                       transform: "rotate(-90deg)",
-                      fontSize: "2.5rem",
+                      fontSize: "3.5rem",
                       margin: "0.1rem 0",
                     }}
                   >

@@ -12,6 +12,9 @@ load_dotenv(dotenv_path)
 
 # === Serial Setup ===
 arduino = serial.Serial('COM3', 9600, timeout=1)
+time.sleep(2)  # Give Arduino time to reset
+arduino.reset_input_buffer()
+arduino.reset_output_buffer()
 
 # === Firebase Setup ===
 cred_path = os.getenv("FIREBASE_CRED_PATH")

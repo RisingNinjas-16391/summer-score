@@ -1,7 +1,8 @@
 export const teamMap: Record<string, string> = {
   "Team 1": "Kachow",
-  "Team 2": "Ur mom",
-  "Team 3": "Steak on a Stake",
-  "Team 4": "Shaquille O'Meal",
-  "Team 5": "Da Ballers"
+  "Team 2": "PRAWNs",
+  "Team 3": "Beams on a Companion Cube",
+  "Team 4": "eiscreme",
+  "Team 5": "The Best Spicy Pickle"
+  "Team 6": "The Missing Chip Bag"
 };

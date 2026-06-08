@@ -76,7 +76,7 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
 
     const teleopScore =
       updated.centerBalls * 8 +
-      updated.sideBalls * 10 +
+      updated.sideBalls * 7 +
       (updated.climbed ? 10 : 0) +
       (updated.climbAmplified ? 10 : 0);
 

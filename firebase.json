@@ -9,7 +9,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://gstatic.com https://firestore.googleapis.com https://summer-score-a9a63.web.app https://summer-score-a9a63.web.app/_next/static/chunks/webpack-8ba223b515e4ba9a.js https://summer-score-a9a63.web.app/_next/static/chunks/4bd1b696-ad2abe4f257c152d.js https://summer-score-a9a63.web.app/_next/static/chunks/main-app-e658a9e7cebd8332.js https://summer-score-a9a63.web.app/_next/static/chunks/bc9e92e6-0898943b14b4b4c3.jsnext/static/chunks/399-e8701c4b31e9297b.js; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.firebaseio.com https://*googleapis.com wss://*.firebaseio.com;"
+            "value": "default-src 'self' https://firestore.googleapis.com; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://* https://apis.google.com https://gstatic.com https://firestore.googleapis.com https://summer-score-a9a63.web.app; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.firebaseio.com https://*googleapis.com wss://*.firebaseio.com;"
           }
         ]
       }

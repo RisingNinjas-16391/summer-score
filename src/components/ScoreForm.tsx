@@ -195,7 +195,7 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           >
             Driver-Control
           </Typography>
-          {/* {renderCounter("Center Balls", "centerBalls")} */}
+          {renderCounter("Depot Balls", "DepotBalls")}
           {renderCounter("Balls", "Balls")}
           <FormControlLabel
             control={

@@ -152,7 +152,7 @@ export default function Scoreboard() {
           2: "/sounds/walkouts/2_its tv time!.mp3",
           3: "/sounds/walkouts/3_Waiting for Love.mp3",
           4: "/sounds/walkouts/4_Let It Go  Funny indian Remix  Vindaloo Singh.mp3",
-          5: "/sounds/walkouts/5_Thunderstruck.mp3",
+          5: "/sounds/walkouts/5_Pharrell Williams - Double Life (From Despicable Me 4 - Official Lyric Video).mp3",
           6: "/sounds/walkouts/6_Living On a Prayer.mp3",
         };
 

@@ -15,12 +15,11 @@ export type ScoreData = {
   autoScore: number;
   DepotBalls: number;
   Balls: number;
-  HumanPlayerBalls: number;
   matchingBalls: number;
   perfectMatch: boolean;
   teleopScore: number;
-  //climbed: boolean;
-  climbEnd: boolean;
+  climbed: boolean;
+  climbAmplified: boolean;
   ownedMiddle: boolean;
   postMatchAddedPoints: number;
   totalScore: number;
@@ -40,11 +39,10 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
     autoScore: 0,
     DepotBalls: 0,
     Balls: 0,
-    HumanPlayerBalls: 0,
     teleopScore: 0,
     ownedMiddle: false,
-    //climbed: false,
-    climbEnd: false,
+    climbed: false,
+    climbAmplified: false,
     matchingBalls: 0,
     perfectMatch: false,
     preliminaryScore: 0,
@@ -79,9 +77,8 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
     const teleopScore =
       updated.DepotBalls * 2 +
       updated.Balls * 5 +
-      updated.HumanPlayerBalls * 5 +
-     //(updated.climbed ? 10 : 0) +
-      (updated.climbEnd ? 10 : 0);
+     (updated.climbed ? 10 : 0) +
+      (updated.climbAmplified ? 10 : 0);
 
     const postMatchAddedPoints =
       updated.matchingBalls * 5 +
@@ -198,22 +195,36 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           >
             Driver-Control
           </Typography>
-          {renderCounter("Human Player Balls", "HumanPlayerBalls")} 
+          {/* {renderCounter("Center Balls", "centerBalls")} */}
           {renderCounter("Balls", "Balls")}
-        
-
           <FormControlLabel
             control={
               <Checkbox
-                checked={score.climbEnd}
+                checked={score.climbed}
                 onChange={(e) =>
-                  updateAndSave({ ...score, climbEnd: e.target.checked })
+                  updateAndSave({ ...score, climbed: e.target.checked })
                 }
                 sx={{ color: textColor }}
               />
             }
             label={
-              <Typography style={{ color: textColor }}>Climb End?</Typography>
+              <Typography style={{ color: textColor }}>Climbed?</Typography>
+            }
+            sx={{ mt: 2 }}
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={score.climbAmplified}
+                onChange={(e) =>
+                  updateAndSave({ ...score, climbAmplified: e.target.checked })
+                }
+                sx={{ color: textColor }}
+              />
+            }
+            label={
+              <Typography style={{ color: textColor }}>Climb Amplified?</Typography>
             }
             sx={{ mt: 2 }}
           />

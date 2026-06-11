@@ -298,7 +298,7 @@ export default function ScoreIndex() {
             Javi just said a joke
           </Button>
         </div>
-        {[...Array(5)].map((_, i) => {
+        {[...Array(6)].map((_, i) => {
           const teamNum = i + 1;
           return (
             <Button

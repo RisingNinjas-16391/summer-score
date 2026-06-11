@@ -148,11 +148,12 @@ export default function Scoreboard() {
         if (!team || team < 1 || team > 5) return;
 
         const walkoutSounds: { [key: number]: string } = {
-          1: "/sounds/walkouts/1_Radioactive.mp3",
-          2: "/sounds/walkouts/2_Young Black & Rich.mp3",
+          1: "/sounds/walkouts/1_Love Me.mp3",
+          2: "/sounds/walkouts/2_its tv time!.mp3",
           3: "/sounds/walkouts/3_Waiting for Love.mp3",
-          4: "/sounds/walkouts/4_Without Me.mp3",
+          4: "/sounds/walkouts/4_Let It Go  Funny indian Remix  Vindaloo Singh.mp3",
           5: "/sounds/walkouts/5_Thunderstruck.mp3",
+          6: "/sounds/walkouts/6_Living On a Prayer.mp3",
         };
 
         const newSrc = walkoutSounds[team];

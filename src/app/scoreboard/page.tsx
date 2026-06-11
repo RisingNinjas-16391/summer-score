@@ -145,7 +145,7 @@ export default function Scoreboard() {
         const data = docSnap.data();
         const team = data?.team;
 
-        if (!team || team < 1 || team > 5) return;
+        if (!team || team < 1 || team > 6) return;
 
         const walkoutSounds: { [key: number]: string } = {
           1: "/sounds/walkouts/1_Love Me.mp3",

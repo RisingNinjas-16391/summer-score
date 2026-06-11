@@ -13,13 +13,14 @@ export type ScoreData = {
   autoBalls: number;
   parked: boolean;
   autoScore: number;
-  centerBalls: number;
-  sideBalls: number;
+  DepotBalls: number;
+  Balls: number;
+  HumanPlayerBalls: number;
   matchingBalls: number;
   perfectMatch: boolean;
   teleopScore: number;
-  climbed: boolean;
-  climbAmplified: boolean;
+  //climbed: boolean;
+  climbEnd: boolean;
   ownedMiddle: boolean;
   postMatchAddedPoints: number;
   totalScore: number;
@@ -37,12 +38,13 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
     autoBalls: 0,
     parked: false,
     autoScore: 0,
-    centerBalls: 0,
-    sideBalls: 0,
+    DepotBalls: 0,
+    Balls: 0,
+    HumanPlayerBalls: 0,
     teleopScore: 0,
     ownedMiddle: false,
-    climbed: false,
-    climbAmplified: false,
+    //climbed: false,
+    climbEnd: false,
     matchingBalls: 0,
     perfectMatch: false,
     preliminaryScore: 0,
@@ -72,13 +74,14 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
       : "white";
 
   const updateAndSave = (updated: ScoreData) => {
-    const autoScore = updated.autoBalls * 5 + (updated.parked ? 5 : 0);
+    const autoScore = updated.autoBalls * 10 + (updated.parked ? 10 : 0);
 
     const teleopScore =
-      updated.centerBalls * 8 +
-      updated.sideBalls * 9 +
-      (updated.climbed ? 10 : 0) +
-      (updated.climbAmplified ? 10 : 0);
+      updated.DepotBalls * 2 +
+      updated.Balls * 5 +
+      updated.HumanPlayerBalls * 5 +
+     //(updated.climbed ? 10 : 0) +
+      (updated.climbEnd ? 10 : 0);
 
     const postMatchAddedPoints =
       updated.matchingBalls * 5 +
@@ -195,36 +198,22 @@ function ScoreForm({ teamColor }: ScoreFormProps) {
           >
             Driver-Control
           </Typography>
-          {renderCounter("Center Balls", "centerBalls")}
-          {renderCounter("Side Balls", "sideBalls")}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={score.climbed}
-                onChange={(e) =>
-                  updateAndSave({ ...score, climbed: e.target.checked })
-                }
-                sx={{ color: textColor }}
-              />
-            }
-            label={
-              <Typography style={{ color: textColor }}>Climbed?</Typography>
-            }
-            sx={{ mt: 2 }}
-          />
+          {renderCounter("Human Player Balls", "HumanPlayerBalls")} 
+          {renderCounter("Balls", "Balls")}
+        
 
           <FormControlLabel
             control={
               <Checkbox
-                checked={score.climbAmplified}
+                checked={score.climbEnd}
                 onChange={(e) =>
-                  updateAndSave({ ...score, climbAmplified: e.target.checked })
+                  updateAndSave({ ...score, climbEnd: e.target.checked })
                 }
                 sx={{ color: textColor }}
               />
             }
             label={
-              <Typography style={{ color: textColor }}>Climb Amplified?</Typography>
+              <Typography style={{ color: textColor }}>Climb End?</Typography>
             }
             sx={{ mt: 2 }}
           />
